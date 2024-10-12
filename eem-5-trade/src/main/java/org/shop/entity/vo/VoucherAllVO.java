@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 
 /**
  * 优惠券完全VO
- *
- * @author SK
- * @date 2024/06/03
  */
 @Data
 @Builder

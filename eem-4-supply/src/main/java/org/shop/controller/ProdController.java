@@ -11,27 +11,25 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * 商品控制
- *
- * @author SK
- * @date 2024/06/03
  */
 @Slf4j
 @Tag(name = "Prod", description = "商品")
 @RequestMapping("/admin/prod")
 @RestController
+@RequiredArgsConstructor
 public class ProdController {
 
-    @Autowired
-    private ProdService prodService;
 
-    @Autowired
-    private ProdCateService prodCateService;
+    private final ProdService prodService;
+
+
+    private final ProdCateService prodCateService;
 
 
     //! Func

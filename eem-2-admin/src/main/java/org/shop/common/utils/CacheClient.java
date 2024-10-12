@@ -8,7 +8,6 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.common.constant.RedisConstant;
 import org.shop.entity.res.RedisData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +27,7 @@ import java.util.function.Function;
 public class CacheClient {
 
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
-    @Autowired
+
     private StringRedisTemplate stringRedisTemplate;
 
     //任意Java对象序列化为JSON，并存储到String类型的Key中，并可以设置TTL过期时间

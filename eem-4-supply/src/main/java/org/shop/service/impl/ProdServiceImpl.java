@@ -9,23 +9,24 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
+import org.shop.common.constant.RedisConstant;
+import org.shop.common.constant.ServiceConstant;
 import org.shop.common.constant.SystemConstant;
 import org.shop.common.context.UserHolder;
-import org.shop.common.exception.BadArgsException;
-import org.shop.common.exception.BaseException;
-import org.shop.common.exception.SthHasCreatedException;
-import org.shop.common.exception.SthNotFoundException;
+import org.shop.common.exception.*;
 import org.shop.entity.Prod;
 import org.shop.entity.ProdCate;
 import org.shop.entity.ProdFunc;
 import org.shop.entity.dto.*;
+import org.shop.entity.res.RedisData;
 import org.shop.entity.vo.ProdAllVO;
 import org.shop.entity.vo.ProdGreatVO;
 import org.shop.mapper.ProdMapper;
 import org.shop.service.*;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements ProdService {
 
     /**
@@ -45,25 +47,23 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
-    @Autowired
-    private ProdFuncService prodFuncService;
-    @Autowired
-    private ProdCateService prodCateService;
-    @Autowired
-    private UpshowService upshowService;
-    @Autowired
-    private RotationService rotationService;
-    @Autowired
-    private HotsearchService hotsearchService;
 
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private NewDTOUtils dtoUtils;
+    private final ProdFuncService prodFuncService;
+
+    private final ProdCateService prodCateService;
+
+    private final UpshowService upshowService;
+
+    private final RotationService rotationService;
+
+    private final HotsearchService hotsearchService;
+
+
+//    private final OrderService orderService;
 
 
     //! Func
-    @Autowired
+
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
@@ -213,7 +213,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     @Override
     @Transactional
     public void postProdG(ProdGreatDTO prodGreatDTO) {
-        if (this.query().eq("name", prodGreatDTO.getName()).count() > 0) throw new SthHasCreatedException(OBJECT_HAS_ALIVE);
+        if (this.query().eq("name", prodGreatDTO.getName()).count() > 0) throw new SthHasCreatedException(MessageConstant.OBJECT_HAS_ALIVE);
 
         Prod prod = new Prod();
         ProdFunc prodFunc = new ProdFunc();
@@ -227,7 +227,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         prodFuncService.save(prodFunc);
 
         //还需要添加Redis Key
-        stringRedisTemplate.opsForValue().set(SECKILL_STOCK_KEY + prod.getId(), prod.getStock().toString());
+        stringRedisTemplate.opsForValue().set(RedisConstant.SECKILL_STOCK_KEY + prod.getId(), prod.getStock().toString());
     }
 
 
@@ -247,7 +247,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     @Transactional
     public void deleteProdG(String name) {
         Prod prod = this.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getName, name));
-        if (prod == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         //需要判断是否有已经开启的交易
         Order order = orderService.getOne(Wrappers.<Order>lambdaQuery()
@@ -256,13 +256,13 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
                 .ne(Order::getStatus, Order.STOP) //已经撤销的交易不算
         );
 
-        if (order != null) throw new SthHasCreatedException(ORDER_STATUS_ERROR);
+        if (order != null) throw new SthHasCreatedException(MessageConstant.ORDER_STATUS_ERROR);
 
         prodFuncService.removeById(prod.getId());
         this.removeById(prod.getId());
 
         //还需要删除Redis Key
-        stringRedisTemplate.delete(SECKILL_STOCK_KEY + prod.getId());
+        stringRedisTemplate.delete(RedisConstant.SECKILL_STOCK_KEY + prod.getId());
     }
 
 
@@ -274,7 +274,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     public void putProdG(ProdGreatDTO prodGreatDTO) throws InstantiationException, IllegalAccessException {
         // 联表选择性更新
         Optional<Prod> optionalProd = Optional.ofNullable(this.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getName, prodGreatDTO.getName())));
-        if (optionalProd.isEmpty()) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (optionalProd.isEmpty()) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         optionalProd.get().setUserId(UserHolder.getUser().getId());//这里商品的userId是自己
 
@@ -291,7 +291,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         // 联表选择性更新
         Optional<Prod> optionalProd = Optional.ofNullable(this.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getName, prodGreatDTO.getName())));
-        if (optionalProd.isEmpty()) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (optionalProd.isEmpty()) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         optionalProd.get().setUserId(UserHolder.getUser().getId());//这里商品的userId是自己
 
@@ -304,7 +304,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         //包含缓存的更新逻辑, 在更新数据库之后更新缓存(正常流程后)
 
-        String key = CACHE_PROD_KEY + prodGreatDTO.getUserId() + ":" + prodGreatDTO.getName();
+        String key = RedisConstant.CACHE_PROD_KEY + prodGreatDTO.getUserId() + ":" + prodGreatDTO.getName();
         stringRedisTemplate.delete(key);
     }
 
@@ -394,14 +394,14 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         String name = prodLocateDTO.getName();
         Long userId = prodLocateDTO.getUserId();
 
-        if (name == null || userId == null) throw new BadArgsException(BAD_ARGS);
+        if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
         Prod prod = this.getOne(new LambdaQueryWrapper<Prod>()
                 .eq(Prod::getName, name)
                 .eq(Prod::getUserId, userId)
         );
 
-        if (prod == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
@@ -410,7 +410,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         //商品修改
         prodFunc.setShowoffStatus(func);
-        prodFunc.setShowoffEndtime(LocalDateTime.now().plusDays(UPSHOW_LEVEL_TTL[func]));
+        prodFunc.setShowoffEndtime(LocalDateTime.now().plusDays(ServiceConstant.UPSHOW_LEVEL_TTL[func]));
         prodFuncService.updateById(prodFunc);
 
         //展示提升增加
@@ -443,10 +443,10 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
                 .eq(Prod::getUserId, prodLocateDTO.getUserId()));
 
 
-        if (prod == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         //视为一次对具体商品的浏览, 记录浏览量到Redis
-        String productKey = USER_VO_KEY + prod.getId();
+        String productKey = RedisConstant.USER_VO_KEY + prod.getId();
 
         // 使用HyperLogLog记录用户id -> 浏览商品记录
         stringRedisTemplate.opsForHyperLogLog().add(productKey, UserHolder.getUser().getId().toString());
@@ -457,7 +457,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         // 更新商品浏览量, 同时提升权重
         ProdFunc prodFunc = prodFuncService.getOne(Wrappers.<ProdFunc>lambdaQuery().eq(ProdFunc::getId, prod.getId()));
         prodFunc.setVisit(prodFunc.getVisit() + count);
-        prodFunc.setWeight(prodFunc.getWeight() + count * DEFAULT_WEIGHT);
+        prodFunc.setWeight(prodFunc.getWeight() + count * SystemConstant.DEFAULT_WEIGHT);
         prodFuncService.updateById(prodFunc);
 
         ProdGreatVO prodGreatVO;
@@ -465,7 +465,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         try {
             prodGreatVO = dtoUtils.createAndCombineDTOs(ProdGreatVO.class, prod.getId(), ProdAllDTO.class, ProdFuncAllDTO.class);
         } catch (Exception e) {
-            throw new BaseException(UNKNOWN_ERROR);
+            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
         }
 
         return prodGreatVO;
@@ -501,10 +501,10 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         //? 以下为通用余下流程
 
-        if (prod == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         //视为一次对具体商品的浏览, 记录浏览量到Redis
-        String productKey = USER_VO_KEY + prod.getId();
+        String productKey = RedisConstant.USER_VO_KEY + prod.getId();
 
         // 使用HyperLogLog记录用户id -> 浏览商品记录
         stringRedisTemplate.opsForHyperLogLog().add(productKey, UserHolder.getUser().getId().toString());
@@ -515,7 +515,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         // 更新商品浏览量, 同时提升权重
         ProdFunc prodFunc = prodFuncService.getOne(Wrappers.<ProdFunc>lambdaQuery().eq(ProdFunc::getId, prod.getId()));
         prodFunc.setVisit(prodFunc.getVisit() + count);
-        prodFunc.setWeight(prodFunc.getWeight() + count * DEFAULT_WEIGHT);
+        prodFunc.setWeight(prodFunc.getWeight() + count * SystemConstant.DEFAULT_WEIGHT);
         prodFuncService.updateById(prodFunc);
 
         ProdGreatVO prodGreatVO;
@@ -523,7 +523,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         try {
             prodGreatVO = dtoUtils.createAndCombineDTOs(ProdGreatVO.class, prod.getId(), ProdAllDTO.class, ProdFuncAllDTO.class);
         } catch (Exception e) {
-            throw new BaseException(UNKNOWN_ERROR);
+            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
         }
 
         return prodGreatVO;
@@ -534,7 +534,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private Prod queryProdWithLogicalExpire(ProdLocateDTO prodLocateDTO) {
         String locateKey = prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
-        String keyProd = CACHE_PROD_KEY + locateKey;  //构建Prod的Key
+        String keyProd = RedisConstant.CACHE_PROD_KEY + locateKey;  //构建Prod的Key
 
         String prodJson = stringRedisTemplate.opsForValue().get(keyProd);//执行查询
 
@@ -550,7 +550,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         if (LocalDateTime.now().isBefore(redisData.getExpireTime())) return prod; //未过期直接返回Prod
 
         // 过期则尝试获取互斥锁
-        String keyProdLock = LOCK_PROD_KEY + locateKey; //构建Prod的Lock Key
+        String keyProdLock = RedisConstant.LOCK_PROD_KEY + locateKey; //构建Prod的Lock Key
         boolean flag = tryLock(keyProdLock);
 
         if (flag) { //获取到了锁
@@ -558,7 +558,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
             CACHE_REBUILD_EXECUTOR.submit(() -> {
                 try {
                     // 重建缓存
-                    this.saveProd2Redis(prodLocateDTO, ACTIVE_PROD_TTL);
+                    this.saveProd2Redis(prodLocateDTO, RedisConstant.ACTIVE_PROD_TTL);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -581,14 +581,14 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     public void saveProd2Redis(ProdLocateDTO prodLocateDTO, Long expirSeconds) throws InterruptedException {
 
-        String keyProd = CACHE_PROD_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
+        String keyProd = RedisConstant.CACHE_PROD_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
 
         //数据库查询 : MP的lambdaQuery查询
         Prod prod = this.getOne(Wrappers.<Prod>lambdaQuery()
                 .eq(Prod::getName, prodLocateDTO.getName())
                 .eq(Prod::getUserId, prodLocateDTO.getUserId()));
 
-        Thread.sleep(LOCK_PROD_FAIL_WT * 4); // 模拟重建缓存耗时
+        Thread.sleep(RedisConstant.LOCK_PROD_FAIL_WT * 4); // 模拟重建缓存耗时
 
         //包装 RedisData 对象
         RedisData redisData = new RedisData();
@@ -604,7 +604,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private Prod queryProdWithMutex(ProdLocateDTO prodLocateDTO) {
         String locateKey = prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
-        String keyProd = CACHE_PROD_KEY + locateKey;  //构建Prod的Key
+        String keyProd = RedisConstant.CACHE_PROD_KEY + locateKey;  //构建Prod的Key
 
         String prodJson = stringRedisTemplate.opsForValue().get(keyProd);//执行查询
 
@@ -619,13 +619,13 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         // 实现在高并发的情况下缓存击穿缓存重建
         Prod prod;
-        String keyProdLock = LOCK_PROD_KEY + locateKey; //构建Prod的Lock Key
+        String keyProdLock = RedisConstant.LOCK_PROD_KEY + locateKey; //构建Prod的Lock Key
         try {
             // 尝试获取锁
             boolean flag = tryLock(keyProdLock);
 
             while (!flag) {
-                Thread.sleep(LOCK_PROD_FAIL_WT); // 获取失败则等待后重试
+                Thread.sleep(RedisConstant.LOCK_PROD_FAIL_WT); // 获取失败则等待后重试
                 return queryProdWithMutex(prodLocateDTO); //递归调用
             }
             //获取成功执行重建操作
@@ -636,13 +636,13 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
                     .eq(Prod::getUserId, prodLocateDTO.getUserId()));
 
             if (prod == null) { //还查不到就要进行缓存穿透的空数据设置
-                stringRedisTemplate.opsForValue().set(keyProd, "", CACHE_NULL_TTL, TimeUnit.MINUTES); //设置TTL - NULL
+                stringRedisTemplate.opsForValue().set(keyProd, "", RedisConstant.CACHE_NULL_TTL, TimeUnit.MINUTES); //设置TTL - NULL
                 return null;
             }
 
             //查到了就要进行缓存设置
             String jsonStr = JSONUtil.toJsonStr(prod);
-            stringRedisTemplate.opsForValue().set(keyProd, jsonStr, CACHE_PROD_TTL, TimeUnit.MINUTES); //设置TTL - PROD
+            stringRedisTemplate.opsForValue().set(keyProd, jsonStr, RedisConstant.CACHE_PROD_TTL, TimeUnit.MINUTES); //设置TTL - PROD
 
             //返回查询到的Prod
             return prod;
@@ -659,7 +659,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      * 缓存击穿的互斥锁实现 - 加锁
      */
     private boolean tryLock(String key) {
-        Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", LOCK_PROD_TTL, TimeUnit.SECONDS);
+        Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", RedisConstant.LOCK_PROD_TTL, TimeUnit.SECONDS);
         return BooleanUtil.isTrue(flag);       //避免返回值为null使用了BooleanUtil工具类
     }
 
@@ -677,7 +677,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private Prod queryProdWithBlankObject(ProdLocateDTO prodLocateDTO) {
         //针对传入的prodLocateDTO进行Key构建: 选择name和userId作为Key, userId.toString() : name, 加上前缀
-        String key = CACHE_PROD_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
+        String key = RedisConstant.CACHE_PROD_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
 
         String prodJson = stringRedisTemplate.opsForValue().get(key);//执行查询
 
@@ -698,13 +698,13 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
 
         if (prod == null) { //还查不到就要进行缓存穿透的空数据设置
-            stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES); //设置TTL - NULL
+            stringRedisTemplate.opsForValue().set(key, "", RedisConstant.CACHE_NULL_TTL, TimeUnit.MINUTES); //设置TTL - NULL
             return null;
         }
 
         //查到了就要进行缓存设置
         String jsonStr = JSONUtil.toJsonStr(prod);
-        stringRedisTemplate.opsForValue().set(key, jsonStr, CACHE_PROD_TTL, TimeUnit.MINUTES); //设置TTL - PROD
+        stringRedisTemplate.opsForValue().set(key, jsonStr, RedisConstant.CACHE_PROD_TTL, TimeUnit.MINUTES); //设置TTL - PROD
 
         //返回查询到的Prod
         return prod;
@@ -717,7 +717,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         ProdCate prodCate = prodCateService.getOne(Wrappers.<ProdCate>lambdaQuery()
                 .eq(ProdCate::getName, cate));
 
-        if (prodCate == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prodCate == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         Long id = prodCate.getId();
 
@@ -733,7 +733,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         ProdCate prodCate = prodCateService.getOne(Wrappers.<ProdCate>lambdaQuery()
                 .eq(ProdCate::getName, cate));
 
-        if (prodCate == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prodCate == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         Long id = prodCate.getId();
 

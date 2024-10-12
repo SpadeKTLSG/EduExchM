@@ -44,17 +44,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         SECKILL_SCRIPT.setResultType(Long.class); //返回类型
     }
 
-    @Autowired
+
     private OrderDetailService orderDetailService;
-    @Autowired
+
     private ProdService prodService;
-    @Autowired
+
     private ProdFuncService prodFuncService;
-    @Autowired
+
     private UserFuncService userFuncService;
-    @Autowired
+
     private MQSender mqSender;
-    @Autowired
+
     private StringRedisTemplate stringRedisTemplate;
     /**
      * 令牌桶算法 限流

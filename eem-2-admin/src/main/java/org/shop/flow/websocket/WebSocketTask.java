@@ -16,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class WebSocketTask {
 
-    @Autowired
+
     private WebSocketServer webSocketServer;
 
     /**

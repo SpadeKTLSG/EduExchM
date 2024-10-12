@@ -2,28 +2,26 @@ package org.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.entity.Prod;
 import org.shop.entity.Upshow;
 import org.shop.entity.dto.ProdLocateDTO;
 import org.shop.entity.dto.UpshowAllDTO;
 import org.shop.mapper.UpshowMapper;
-import org.shop.service.ProdFuncService;
 import org.shop.service.ProdService;
 import org.shop.service.UpshowService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UpshowServiceImpl extends ServiceImpl<UpshowMapper, Upshow> implements UpshowService {
 
-    @Autowired
-    private ProdService prodService;
-    @Autowired
-    private ProdFuncService prodFuncService;
+
+    private final ProdService prodService;
 
 
     @Override

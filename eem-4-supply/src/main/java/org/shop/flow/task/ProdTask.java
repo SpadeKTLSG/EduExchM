@@ -19,9 +19,9 @@ import java.util.List;
 @Slf4j
 public class ProdTask {
 
-    @Autowired
+
     private ProdService prodService;
-    @Autowired
+
     private HotsearchService hotsearchService;
 
 

@@ -15,7 +15,7 @@ import static com.shop.common.constant.RabbitMQConstant.EXCHANGE;
 @Component
 public class MQSender {
 
-    @Autowired
+
     private RabbitTemplate rabbitTemplate;
 
     /**

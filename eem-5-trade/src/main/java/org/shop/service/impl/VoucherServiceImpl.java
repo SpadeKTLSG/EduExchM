@@ -27,9 +27,9 @@ import java.util.Objects;
 @Service
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
-    @Autowired
+
     private UserFuncService userFuncService;
-    @Autowired
+
     private OrderService orderService;
 
 

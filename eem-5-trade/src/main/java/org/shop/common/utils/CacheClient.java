@@ -28,7 +28,7 @@ import java.util.function.Function;
 public class CacheClient {
 
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
-    @Autowired
+
     private StringRedisTemplate stringRedisTemplate;
 
     //任意Java对象序列化为JSON，并存储到String类型的Key中，并可以设置TTL过期时间

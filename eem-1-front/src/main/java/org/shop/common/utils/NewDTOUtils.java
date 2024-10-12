@@ -17,15 +17,15 @@ import java.beans.PropertyDescriptor;
 public class NewDTOUtils {
 
     // 需要注入各类依赖, 需要不时更新
-    @Autowired
+
     private ProdService prodService;
-    @Autowired
+
     private ProdFuncService prodFuncService;
-    @Autowired
+
     private UserService userService;
-    @Autowired
+
     private UserFuncService userFuncService;
-    @Autowired
+
     private UserDetailService userDetailService;
 
 

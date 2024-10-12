@@ -5,10 +5,10 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.websocket.Session;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.entity.res.Result;
 import org.shop.flow.websocket.WebSocketServer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Customer", description = "客服")
 @RequestMapping("/customer/admin")  //customer为客户端和服务端的统一前缀
 @RestController
+@RequiredArgsConstructor
 public class CustomerController {
 
-    @Autowired
-    private WebSocketServer webSocketServer;
+
+    private final WebSocketServer webSocketServer;
 
     /**
      * 向客户端推送消息

@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 优惠券定位DTO
- *
- * @author SK
- * @date 2024/06/03
  */
 @Data
 @Builder

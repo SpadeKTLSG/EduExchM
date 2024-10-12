@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.common.constant.SystemConstant;
 import org.shop.entity.dto.EmployeeAllDTO;
@@ -15,7 +16,6 @@ import org.shop.entity.res.Result;
 import org.shop.entity.vo.EmployeeVO;
 import org.shop.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -25,10 +25,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Employee", description = "员工")
 @RequestMapping("/admin/employee")
 @RestController
+@RequiredArgsConstructor
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+
+    private final EmployeeService employeeService;
 
 
     //! Func

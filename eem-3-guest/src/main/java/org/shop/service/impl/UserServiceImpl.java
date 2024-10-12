@@ -1,8 +1,8 @@
 package org.shop.service.impl;
 
-import cn.hutool.core.lang.UUID;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -49,7 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserFuncService userFuncService;
     private final UserDetailService userDetailService;
 
-//    @Autowired
+
 //    private ProdService prodService;
 
 

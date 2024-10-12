@@ -2,7 +2,9 @@ package org.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
 import org.shop.common.exception.SthHasCreatedException;
 import org.shop.common.exception.SthNotFoundException;
 import org.shop.entity.ProdCate;
@@ -15,13 +17,14 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ProdCateServiceImpl extends ServiceImpl<ProdCateMapper, ProdCate> implements ProdCateService {
 
     @Override
     public void postCateA(ProdCateAllDTO prodCateAllDTO) {
 
         if (this.getOne(new LambdaQueryWrapper<ProdCate>()
-                .eq(ProdCate::getName, prodCateAllDTO.getName()), false) != null) throw new SthHasCreatedException(OBJECT_HAS_ALIVE);
+                .eq(ProdCate::getName, prodCateAllDTO.getName()), false) != null) throw new SthHasCreatedException(MessageConstant.OBJECT_HAS_ALIVE);
 
         this.save(ProdCate.builder()
                 .name(prodCateAllDTO.getName())
@@ -42,7 +45,7 @@ public class ProdCateServiceImpl extends ServiceImpl<ProdCateMapper, ProdCate> i
     public void putCateA(ProdCateAllDTO prodCateAllDTO) {
         ProdCate prodCate = this.getOne(new LambdaQueryWrapper<ProdCate>()
                 .eq(ProdCate::getName, prodCateAllDTO.getName()), false);
-        if (prodCate == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prodCate == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         BeanUtils.copyProperties(prodCateAllDTO, prodCate);
         this.updateById(prodCate);

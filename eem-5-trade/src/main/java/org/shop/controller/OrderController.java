@@ -11,14 +11,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * 订单控制
- *
- * @author SK
- * @date 2024/06/03
  */
 @Slf4j
 @Tag(name = "Order", description = "订单")
@@ -26,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class OrderController {
 
-    @Autowired
+
     private OrderService orderService;
 
 

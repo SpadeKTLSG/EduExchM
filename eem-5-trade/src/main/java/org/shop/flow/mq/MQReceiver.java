@@ -30,11 +30,11 @@ import static com.shop.common.constant.RabbitMQConstant.QUEUE;
 @Lazy(false) //解决懒加载问题
 public class MQReceiver {
 
-    @Autowired
+
     private ProdService prodService;
-    @Autowired
+
     private OrderService orderService;
-    @Autowired
+
     private OrderDetailService orderDetailService;
 
     /**

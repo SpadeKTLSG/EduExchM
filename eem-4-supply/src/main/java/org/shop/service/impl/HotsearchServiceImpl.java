@@ -2,6 +2,7 @@ package org.shop.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.entity.Hotsearch;
 import org.shop.entity.Prod;
@@ -13,18 +14,18 @@ import org.shop.service.HotsearchService;
 import org.shop.service.ProdFuncService;
 import org.shop.service.ProdService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HotsearchServiceImpl extends ServiceImpl<HotsearchMapper, Hotsearch> implements HotsearchService {
 
-    @Autowired
-    private ProdService prodService;
-    @Autowired
-    private ProdFuncService prodFuncService;
+
+    private final ProdService prodService;
+
+    private final ProdFuncService prodFuncService;
 
 
     @Override
