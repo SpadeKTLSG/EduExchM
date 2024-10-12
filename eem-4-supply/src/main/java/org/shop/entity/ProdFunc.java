@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 
 /**
  * 商品功能
- *
- * @author SK
- * @date 2024/05/31
  */
 @Data
 @Builder

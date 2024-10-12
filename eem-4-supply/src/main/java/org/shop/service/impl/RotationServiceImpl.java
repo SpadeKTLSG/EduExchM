@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.entity.Prod;
+import org.shop.entity.Rotation;
 import org.shop.entity.dto.ProdLocateDTO;
 import org.shop.entity.dto.RotationAllDTO;
 import org.shop.mapper.RotationMapper;

@@ -1,6 +1,8 @@
 package org.shop.common.context;
 
 
+import org.shop.entity.dto.UserLocalDTO;
+
 /**
  * 用户上下文
  */

@@ -1,6 +1,8 @@
 package org.shop.common.context;
 
 
+import org.shop.entity.dto.EmployeeLocalDTO;
+
 /**
  * 管理员上下文
  */

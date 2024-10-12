@@ -10,9 +10,6 @@ import lombok.experimental.Accessors;
 
 /**
  * 用户核心
- *
- * @author SK
- * @date 2024/05/31
  */
 @Data
 @Builder

@@ -10,6 +10,7 @@ import org.shop.common.constant.MessageConstant;
 import org.shop.common.constant.RedisConstant;
 import org.shop.common.context.EmployeeHolder;
 import org.shop.common.exception.NotLoginException;
+import org.shop.entity.dto.EmployeeLocalDTO;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 

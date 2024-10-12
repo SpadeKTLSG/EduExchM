@@ -12,8 +12,6 @@ import org.shop.service.ProdCateService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import static com.shop.common.constant.MessageConstant.OBJECT_HAS_ALIVE;
-import static com.shop.common.constant.MessageConstant.OBJECT_NOT_ALIVE;
 
 @Slf4j
 @Service

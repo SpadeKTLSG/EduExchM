@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 提升 DTO
- *
- * @author SK
- * @date 2024/05/31
  */
 @Data
 @Builder
