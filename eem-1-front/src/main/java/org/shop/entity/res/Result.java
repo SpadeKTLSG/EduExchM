@@ -9,9 +9,6 @@ import java.util.List;
 
 /**
  * 返回结果
- *
- * @author SK
- * @date 2024/06/01
  */
 @Data
 @NoArgsConstructor

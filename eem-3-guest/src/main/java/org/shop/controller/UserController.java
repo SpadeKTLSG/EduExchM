@@ -1,35 +1,33 @@
 package org.shop.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shop.pojo.dto.UserGreatDTO;
-import com.shop.pojo.res.Result;
-import com.shop.pojo.vo.UserVO;
-import com.shop.serve.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.SystemConstant;
+import org.shop.entity.dto.UserGreatDTO;
+import org.shop.entity.res.Result;
+import org.shop.entity.vo.UserVO;
+import org.shop.service.UserService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static com.shop.common.constant.SystemConstant.MAX_PAGE_SIZE;
 
 /**
  * 员工用户控制
- *
- * @author SK
- * @date 2024/06/01
  */
 @Slf4j
 @Tag(name = "User", description = "用户控制")
 @RequestMapping("/admin/user")
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
 
 
     //! Func
@@ -97,7 +95,7 @@ public class UserController {
     @Parameters(@Parameter(name = "current", description = "当前页", required = true))
     public Result pageUser8EzA(@RequestParam(value = "current", defaultValue = "1") Integer current) {
 
-        return Result.success(userService.page(new Page<>(current, MAX_PAGE_SIZE)).convert(user -> {
+        return Result.success(userService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)).convert(user -> {
             UserVO userVO = new UserVO();
             BeanUtils.copyProperties(user, userVO);
             return userVO;

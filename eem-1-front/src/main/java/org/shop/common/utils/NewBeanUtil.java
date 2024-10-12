@@ -13,9 +13,6 @@ import java.util.stream.Stream;
 
 /**
  * 自制BeanUtil工具类
- *
- * @author SK
- * @date 2024/06/01
  */
 public class NewBeanUtil {
 

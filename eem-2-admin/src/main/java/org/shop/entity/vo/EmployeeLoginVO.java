@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 /**
  * 员工登录VO
  * 传递员工信息, 不包含密码
- *
- * @author SK
- * @date 2024/06/01
  */
 @Data
 @Builder

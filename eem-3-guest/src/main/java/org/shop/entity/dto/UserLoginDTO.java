@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 用户登录DTO
- *
- * @author SK
- * @date 2024/06/01
  */
 @Data
 @Builder

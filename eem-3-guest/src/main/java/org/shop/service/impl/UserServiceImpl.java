@@ -1,16 +1,23 @@
 package org.shop.service.impl;
 
-
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
 import org.shop.common.constant.PasswordConstant;
+import org.shop.common.constant.RedisConstant;
+import org.shop.common.constant.SystemConstant;
 import org.shop.common.context.UserHolder;
 import org.shop.common.exception.*;
+import org.shop.common.utils.MailUtil;
+import org.shop.common.utils.RegexUtil;
 import org.shop.entity.User;
 import org.shop.entity.UserDetail;
 import org.shop.entity.UserFunc;
@@ -21,7 +28,7 @@ import org.shop.mapper.UserMapper;
 import org.shop.service.UserDetailService;
 import org.shop.service.UserFuncService;
 import org.shop.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.connection.BitFieldSubCommands;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -31,23 +38,22 @@ import org.springframework.util.DigestUtils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
 
-    @Autowired
-    private UserFuncService userFuncService;
-    @Autowired
-    private UserDetailService userDetailService;
-    @Autowired
-    private ProdService prodService;
+    private final UserFuncService userFuncService;
+    private final UserDetailService userDetailService;
 
-    @Autowired
-    private NewDTOUtils dtoUtils;
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+//    @Autowired
+//    private ProdService prodService;
+
+
+    private final StringRedisTemplate stringRedisTemplate;
 
 
     //! Func
@@ -56,14 +62,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public String sendCodeG(String phone, HttpSession session) {
 
         // 1. 判断是否在一级限制条件内
-        Boolean oneLevelLimit = stringRedisTemplate.opsForSet().isMember(ONE_LEVERLIMIT_KEY + phone, "1");
+        Boolean oneLevelLimit = stringRedisTemplate.opsForSet().isMember(RedisConstant.ONE_LEVERLIMIT_KEY + phone, "1");
 
         if (oneLevelLimit != null && oneLevelLimit) {
             return "!您需要等5分钟后再请求";
         }
 
         // 2. 判断是否在二级限制条件内
-        Boolean twoLevelLimit = stringRedisTemplate.opsForSet().isMember(TWO_LEVERLIMIT_KEY + phone, "1");
+        Boolean twoLevelLimit = stringRedisTemplate.opsForSet().isMember(RedisConstant.TWO_LEVERLIMIT_KEY + phone, "1");
 
         if (twoLevelLimit != null && twoLevelLimit) {
             return "!您需要等20分钟后再请求";
@@ -72,30 +78,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 3. 检查过去1分钟内发送验证码的次数
         long oneMinuteAgo = System.currentTimeMillis() - 60 * 1000;
-        long count_oneminute = stringRedisTemplate.opsForZSet().count(SENDCODE_SENDTIME_KEY + phone, oneMinuteAgo, System.currentTimeMillis());
+        long count_oneminute = stringRedisTemplate.opsForZSet().count(RedisConstant.SENDCODE_SENDTIME_KEY + phone, oneMinuteAgo, System.currentTimeMillis());
         if (count_oneminute >= 1) {
             return "!距离上次发送时间不足1分钟, 请1分钟后重试";
         }
 
         // 4. 检查发送验证码的次数
         long fiveMinutesAgo = System.currentTimeMillis() - 5 * 60 * 1000;
-        long count_fiveminute = stringRedisTemplate.opsForZSet().count(SENDCODE_SENDTIME_KEY + phone, fiveMinutesAgo, System.currentTimeMillis());
+        long count_fiveminute = stringRedisTemplate.opsForZSet().count(RedisConstant.SENDCODE_SENDTIME_KEY + phone, fiveMinutesAgo, System.currentTimeMillis());
 
         if (count_fiveminute % 3 == 2 && count_fiveminute > 5) {
-            stringRedisTemplate.opsForSet().add(TWO_LEVERLIMIT_KEY + phone, "1");
-            stringRedisTemplate.expire(TWO_LEVERLIMIT_KEY + phone, 20, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForSet().add(RedisConstant.TWO_LEVERLIMIT_KEY + phone, "1");
+            stringRedisTemplate.expire(RedisConstant.TWO_LEVERLIMIT_KEY + phone, 20, TimeUnit.MINUTES);
             return "!请求过于频繁, 请20分钟后再请求"; // 发送了8, 11, 14, ...次，进入二级限制
 
         } else if (count_fiveminute == 5) {
-            stringRedisTemplate.opsForSet().add(ONE_LEVERLIMIT_KEY + phone, "1");
-            stringRedisTemplate.expire(ONE_LEVERLIMIT_KEY + phone, 5, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForSet().add(RedisConstant.ONE_LEVERLIMIT_KEY + phone, "1");
+            stringRedisTemplate.expire(RedisConstant.ONE_LEVERLIMIT_KEY + phone, 5, TimeUnit.MINUTES);
             return "!5分钟内您已经发送了5次, 请等待5分钟后重试";  // 过去5分钟内已经发送了5次，进入一级限制
         }
 
 
-        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(PHONE_INVALID); //校验手机号
+        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(MessageConstant.PHONE_INVALID); //校验手机号
 
-        Set<String> keys = stringRedisTemplate.keys(LOGIN_USER_KEY_GUEST + phone + "*"); //删除之前的验证码
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_GUEST + phone + "*"); //删除之前的验证码
         if (keys != null) {
             stringRedisTemplate.delete(keys);
         }
@@ -103,9 +109,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         String code = MailUtil.achieveCode();//生成验证码: 自定义工具类生成验证码
 
-        stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY_GUEST + phone, code, LOGIN_CODE_TTL_GUEST, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set(RedisConstant.LOGIN_CODE_KEY_GUEST + phone, code, RedisConstant.LOGIN_CODE_TTL_GUEST, TimeUnit.MINUTES);
         // 更新发送时间和次数
-        stringRedisTemplate.opsForZSet().add(SENDCODE_SENDTIME_KEY + phone, System.currentTimeMillis() + "", System.currentTimeMillis());
+        stringRedisTemplate.opsForZSet().add(RedisConstant.SENDCODE_SENDTIME_KEY + phone, System.currentTimeMillis() + "", System.currentTimeMillis());
 
         return code; //调试环境: 返回验证码; 未来使用邮箱工具类发送验证码
     }
@@ -114,27 +120,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public String loginG(UserLoginDTO userLoginDTO, HttpSession session) {
 
         //删除掉之前的所有登陆令牌
-        Set<String> keys = stringRedisTemplate.keys(LOGIN_USER_KEY_GUEST + "*");
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_GUEST + "*");
         if (keys != null) {
             stringRedisTemplate.delete(keys);
         }
 
         //校验手机号
         String phone = userLoginDTO.getPhone();
-        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(PHONE_INVALID);
+        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(MessageConstant.PHONE_INVALID);
 
         //从redis获取验证码并校验
-        String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY_GUEST + phone);
+        String cacheCode = stringRedisTemplate.opsForValue().get(RedisConstant.LOGIN_CODE_KEY_GUEST + phone);
         String code = userLoginDTO.getCode();
-        if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(CODE_INVALID);
+        if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(MessageConstant.CODE_INVALID);
 
         //根据用户名查询用户
         User user = query().eq("account", userLoginDTO.getAccount()).one();
-        if (user == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (user == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         //判断是否被锁定了
         UserFunc userFunc = userFuncService.getById(user.getId());
-        if (Objects.equals(userFunc.getStatus(), UserFunc.BLOCK)) throw new BlockActionException(ACCOUNT_LOCKED);
+        if (Objects.equals(userFunc.getStatus(), UserFunc.BLOCK)) throw new BlockActionException(MessageConstant.ACCOUNT_LOCKED);
 
 
         // 随机生成token，作为登录令牌
@@ -146,9 +152,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                         .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
 
         // 存储
-        String tokenKey = LOGIN_USER_KEY_GUEST + token;
+        String tokenKey = RedisConstant.LOGIN_USER_KEY_GUEST + token;
         stringRedisTemplate.opsForHash().putAll(tokenKey, userMap);
-        stringRedisTemplate.expire(tokenKey, LOGIN_USER_TTL_GUEST, TimeUnit.MINUTES);
+        stringRedisTemplate.expire(tokenKey, RedisConstant.LOGIN_USER_TTL_GUEST, TimeUnit.MINUTES);
 
         return token;
     }
@@ -157,7 +163,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void logoutG() {
 
-        Set<String> keys = stringRedisTemplate.keys(LOGIN_USER_KEY_GUEST + "*");        //删除掉之前本地的所有登陆令牌
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_GUEST + "*");        //删除掉之前本地的所有登陆令牌
 
         if (keys != null) {
             stringRedisTemplate.delete(keys);
@@ -172,7 +178,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         LocalDateTime now = LocalDateTime.now();
         String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));  // 拼接key
-        String key = USER_SIGN_KEY + userId + keySuffix;
+        String key = RedisConstant.USER_SIGN_KEY + userId + keySuffix;
         int dayOfMonth = now.getDayOfMonth();
         stringRedisTemplate.opsForValue().setBit(key, dayOfMonth - 1, true);
 
@@ -186,7 +192,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         LocalDateTime now = LocalDateTime.now();
         String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));  // 拼接key
-        String key = USER_SIGN_KEY + userId + keySuffix;
+        String key = RedisConstant.USER_SIGN_KEY + userId + keySuffix;
         int dayOfMonth = now.getDayOfMonth();
 
         // 获取本月截止今天为止的所有的签到记录，返回的是一个十进制的数字 BITFIELD sign:5:202203 GET u14 0
@@ -227,10 +233,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(Prod::getUserId, prodLocateDTO.getUserId())
                 .eq(Prod::getName, prodLocateDTO.getName()));
 
-        if (prod == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         //从ZSet判断是否已经收藏
-        String key = PROD_COLLECT_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName(); //拼接key = prod:collect:1:天选5PRO
+        String key = RedisConstant.PROD_COLLECT_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName(); //拼接key = prod:collect:1:天选5PRO
         Double score = stringRedisTemplate.opsForZSet().score(key, userId.toString());
 
         //获取collections
@@ -312,7 +318,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Page<Prod> page = new Page<>(); //手动分页
         page.setRecords(prods);
         page.setCurrent(current);
-        page.setSize(MAX_PAGE_SIZE);
+        page.setSize(SystemConstant.MAX_PAGE_SIZE);
         page.setTotal(prods.size());
         return page;
     }
@@ -326,17 +332,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void registerG(UserLoginDTO userLoginDTO, HttpSession session) {
 
         String phone = userLoginDTO.getPhone();
-        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(PHONE_INVALID);
+        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(MessageConstant.PHONE_INVALID);
 
         //从redis获取验证码并校验
-        String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY_GUEST + phone);
+        String cacheCode = stringRedisTemplate.opsForValue().get(RedisConstant.LOGIN_CODE_KEY_GUEST + phone);
         String code = userLoginDTO.getCode();
-        if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(CODE_INVALID);
+        if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(MessageConstant.CODE_INVALID);
 
 
         //校验账户是否已存在
         User userExist = query().eq("account", userLoginDTO.getAccount()).one();
-        if (userExist != null) throw new AccountAlivedException(ACCOUNT_ALIVED);
+        if (userExist != null) throw new AccountAlivedException(MessageConstant.ACCOUNT_ALIVED);
 
 
         //创建账户 + 账户具体信息 + 账户功能信息, 填充必须字段
@@ -403,7 +409,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void putUserPasswordG(UserLoginDTO userLoginDTO) {
 
-        if (this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccount, userLoginDTO.getAccount())) == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccount, userLoginDTO.getAccount())) == null)
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         User user = User.builder()
                 .account(userLoginDTO.getAccount())
@@ -420,7 +427,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UserVO getUser8EzIdA(Long id) {
         User user = this.getById(id);
-        if (user == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (user == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
@@ -431,7 +438,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UserVO getUser8EzA(String account) {
         User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccount, account));
-        if (user == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (user == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(user, userVO);
@@ -445,14 +452,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserLocalDTO userLocalDTO = UserHolder.getUser();
         BeanUtils.copyProperties(this.getById(1L), userLocalDTO);
 
-        if (this.getById(userLocalDTO.getId()) == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (this.getById(userLocalDTO.getId()) == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
 
         UserGreatVO userGreatVO;
         try {
             userGreatVO = dtoUtils.createAndCombineDTOs(UserGreatVO.class, userLocalDTO.getId(), UserAllDTO.class, UserDetailAllDTO.class, UserFuncAllDTO.class);
         } catch (Exception e) {
-            throw new BaseException(UNKNOWN_ERROR);
+            throw new BaseException(MessageConstant.UNKNOWN_ERROR);
         }
 
         return userGreatVO;
@@ -463,7 +470,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Page<UserVO> searchUserB(String account, Integer current) {
 
         //分页展示模糊匹配的所有可能结果
-        Page<User> page = this.page(new Page<>(current, MAX_PAGE_SIZE), Wrappers.<User>lambdaQuery()
+        Page<User> page = this.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE), Wrappers.<User>lambdaQuery()
                 .like(User::getAccount, account)
         );
 

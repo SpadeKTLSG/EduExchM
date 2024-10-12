@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 管理员登录信息DTO
- *
- * @author SK
- * @date 2024/06/01
  */
 @Data
 @Builder
