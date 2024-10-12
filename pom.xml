@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <!--Spring管理-->
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -10,7 +9,6 @@
         <relativePath/>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.shop</groupId>
     <artifactId>EduExchM</artifactId>
@@ -19,7 +17,6 @@
     <packaging>pom</packaging>
     <name>EduExchM</name>
     <description>EduExchM微服务父工程目录</description>
-
 
     <modules>
         <module>eem-0-api</module>
@@ -55,10 +52,15 @@
         <poi.version>4.1.1</poi.version>
         <aliyun.sdk.oss>3.10.2</aliyun.sdk.oss>
 
+        <!--micro-->
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
+
     </properties>
 
 
     <dependencies>
+
         <!--sb-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -68,6 +70,20 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>${spring-cloud-alibaba.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
         </dependency>
 
 
@@ -107,13 +123,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <!--            <version>1.18.20</version>-->
-        </dependency>
-
-        <!--job-->
-        <dependency>
-            <groupId>com.xuxueli</groupId>
-            <artifactId>xxl-job-core</artifactId>
-            <version>${xxl-job.version}</version>
         </dependency>
 
         <!--fastjson-->
@@ -173,7 +182,6 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
@@ -189,13 +197,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
-        </dependency>
-
-        <!--OSS-->
-        <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-            <version>${aliyun.sdk.oss}</version>
         </dependency>
 
         <!-- springDoc-->
@@ -289,7 +290,6 @@
         </resources>
 
         <plugins>
-
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
