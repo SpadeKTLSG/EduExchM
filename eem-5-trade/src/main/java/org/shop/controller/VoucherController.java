@@ -2,15 +2,16 @@ package org.shop.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shop.common.constant.SystemConstant;
-import com.shop.pojo.dto.VoucherAllDTO;
-import com.shop.pojo.res.Result;
-import com.shop.serve.service.VoucherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.SystemConstant;
+import org.shop.entity.dto.VoucherAllDTO;
+import org.shop.entity.res.Result;
+import org.shop.service.VoucherService;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -20,10 +21,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Voucher", description = "优惠券")
 @RequestMapping("/admin/voucher")
 @RestController
+@RequiredArgsConstructor
 public class VoucherController {
 
 
-    private VoucherService voucherService;
+    private final VoucherService voucherService;
 
     //! Func
 

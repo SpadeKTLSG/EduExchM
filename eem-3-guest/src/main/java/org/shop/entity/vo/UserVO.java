@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 用户VO
- *
- * @author SK
- * @date 2024/06/05
  */
 @Data
 @Builder

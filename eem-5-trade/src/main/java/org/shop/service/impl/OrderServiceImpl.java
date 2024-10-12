@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.util.concurrent.RateLimiter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
 import org.shop.common.context.UserHolder;
 import org.shop.common.exception.*;
 import org.shop.entity.Order;
@@ -12,10 +14,10 @@ import org.shop.entity.OrderDetail;
 import org.shop.entity.dto.OrderAllDTO;
 import org.shop.entity.vo.OrderGreatVO;
 import org.shop.flow.mq.MQSender;
+import org.shop.mapper.OrderMapper;
 import org.shop.service.OrderDetailService;
 import org.shop.service.OrderService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -30,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements OrderService {
 
     /**
@@ -45,22 +48,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     }
 
 
-    private OrderDetailService orderDetailService;
+    private final OrderDetailService orderDetailService;
 
-    private ProdService prodService;
+//    private final ProdService prodService;
+//    private final ProdFuncService prodFuncService;
+//    private final UserFuncService userFuncService;
 
-    private ProdFuncService prodFuncService;
+    private final MQSender mqSender;
 
-    private UserFuncService userFuncService;
+    private final StringRedisTemplate stringRedisTemplate;
 
-    private MQSender mqSender;
-
-    private StringRedisTemplate stringRedisTemplate;
     /**
-     * 令牌桶算法 限流
+     * 漏桶算法 限流
      * <p> 这里设置每秒放入10个令牌</p>
      */
-    private RateLimiter rateLimiter = RateLimiter.create(10);
+
+    private final RateLimiter rateLimiter = RateLimiter.create(10, 1, TimeUnit.SECONDS);
 
     //! Func
 
@@ -87,7 +90,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String name = prodLocateDTO.getName();
         Long userId = prodLocateDTO.getUserId();
 
-        if (name == null || userId == null) throw new BadArgsException(BAD_ARGS);
+        if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
 
         Prod prod = prodService.getOne(new LambdaQueryWrapper<Prod>()
@@ -95,13 +98,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq(Prod::getUserId, userId)
         );
 
-        if (prod == null || prod.getStock() <= 0) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null || prod.getStock() <= 0) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
 
         ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );
-        if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BadArgsException(BAD_ARGS);      //审核未通过的商品不可交易
+        if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BadArgsException(MessageConstant.BAD_ARGS);      //审核未通过的商品不可交易
 
 
         //创建订单流程
@@ -118,7 +121,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq("prod_id", prod_id)
                 .count();
 
-        if (count > 0) throw new BlockActionException(ORDER_STATUS_ERROR); //重复购买判定
+        if (count > 0) throw new BlockActionException(MessageConstant.ORDER_STATUS_ERROR); //重复购买判定
 
         //构造订单对象并存储
         Order order = Order.builder()
@@ -144,13 +147,17 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     public void putOrderSeckillG(ProdLocateDTO prodLocateDTO) {
 
-        // 用令牌桶算法进行限流
+
+
         /*
-        原理: 令牌桶算法是一种限流算法，它的原理是系统会以一个恒定的速度往桶里放入令牌，而请求需要拿到令牌才能被处理，如果桶里没有令牌，那么请求就会被限流。
-        令牌桶算法既能够将所有的请求平均分布到时间区间内，又能接受服务器能够承受范围内的突发请求是目前使用较为广泛的一种限流算法
+        漏桶算法是一种限流算法，它的原理是系统会以一个恒定的速度从桶里流出水滴，而请求需要拿到水滴才能被处理，如果桶里没有水滴，那么请求就会被限流。
+        漏桶算法能够限制请求的处理速度，保护系统的稳定性，是目前使用较为广泛的一种限流算法
+        相较于之前的令牌桶算法，漏桶算法对于突发流量的限制效果更好，因为漏桶算法是以一个恒定的速度流出水滴，所以即使突发流量过大，也不会对系统造成太大的冲击
+        考虑到秒杀场景中，用户在秒杀开始时会同时发起大量请求，漏桶算法能够更好地保护系统的稳定性
          */
-        //timeout: 1000 代表 1秒内没有拿到令牌则抛出异常
-        if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS)) throw new NetWorkException(NETWORK_ERROR); //如果没有拿到令牌, 则抛出网络环境异常
+        if (!rateLimiter.tryAcquire(1000, TimeUnit.MILLISECONDS))          //尝试获取令牌
+            throw new NetWorkException(MessageConstant.NETWORK_ERROR); //如果没有拿到令牌, 则抛出网络环境异常
+
 
         // 执行流程
 
@@ -158,19 +165,19 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         String name = prodLocateDTO.getName();
         Long userId = prodLocateDTO.getUserId();
 
-        if (name == null || userId == null) throw new BadArgsException(BAD_ARGS);
+        if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
 
         Prod prod = prodService.getOne(new LambdaQueryWrapper<Prod>()
                 .eq(Prod::getName, name)
                 .eq(Prod::getUserId, userId)
         );
-        if (prod == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );
-        if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BlockActionException(BLOCK_ACTION);//审核未通过的商品不可交易
+        if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BlockActionException(MessageConstant.BLOCK_ACTION);//审核未通过的商品不可交易
 
 
         // 构造输入参数
@@ -191,8 +198,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
             result = r.intValue();
         }
 
-        if (result == 1) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
-        if (result == 2) throw new SthHasCreatedException(ORDER_STATUS_ERROR);
+        if (result == 1) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
+        if (result == 2) throw new SthHasCreatedException(MessageConstant.ORDER_STATUS_ERROR);
 
         //构造订单对象(后续还要补充其详细字段)
         Long buyer_id = UserHolder.getUser().getId();
@@ -238,7 +245,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void sellerKnowAnswer(OrderAllDTO orderAllDTO) {
         Order order1 = dtoFindEntity(orderAllDTO);
         //限制上一个状态为等待卖家确认
-        if (!Objects.equals(order1.getStatus(), Order.WAITCHECK)) throw new BlockActionException(BLOCK_ACTION);
+        if (!Objects.equals(order1.getStatus(), Order.WAITCHECK)) throw new BlockActionException(MessageConstant.BLOCK_ACTION);
         order1.setStatus(Order.TALKING);
         this.updateById(order1);
     }
@@ -249,7 +256,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void buyerKnowAnswer(OrderAllDTO orderAllDTO) {
         Order order1 = dtoFindEntity(orderAllDTO);
         //限制上一个状态为交涉中
-        if (!Objects.equals(order1.getStatus(), Order.TALKING)) throw new BlockActionException(BLOCK_ACTION);
+        if (!Objects.equals(order1.getStatus(), Order.TALKING)) throw new BlockActionException(MessageConstant.BLOCK_ACTION);
         order1.setStatus(Order.EXCHANGING);
         this.updateById(order1);
     }
@@ -260,7 +267,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void sellerKnowClose(OrderAllDTO orderAllDTO) {
         Order order1 = dtoFindEntity(orderAllDTO);
         //限制上一个状态为正在交易
-        if (!Objects.equals(order1.getStatus(), Order.EXCHANGING)) throw new BlockActionException(BLOCK_ACTION);
+        if (!Objects.equals(order1.getStatus(), Order.EXCHANGING)) throw new BlockActionException(MessageConstant.BLOCK_ACTION);
         order1.setStatus(Order.OVER);
         this.updateById(order1);
 
@@ -307,7 +314,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         Long sellerId = orderAllDTO.getSellerId();
         Long buyerId = orderAllDTO.getBuyerId();
 
-        if (sellerId == null || buyerId == null) throw new BadArgsException(BAD_ARGS);
+        if (sellerId == null || buyerId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
         Order order1 = this.getOne(new LambdaQueryWrapper<Order>() //三个ID唯一确认订单
                 .eq(Order::getBuyerId, orderAllDTO.getBuyerId())
@@ -315,7 +322,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .eq(Order::getProdId, orderAllDTO.getProdId())
         );
 
-        if (order1 == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (order1 == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
         return order1;
     }
 

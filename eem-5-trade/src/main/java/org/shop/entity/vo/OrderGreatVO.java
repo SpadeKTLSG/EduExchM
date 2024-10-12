@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 
 /**
  * 订单超级VO (包含订单和订单功能)
- *
- * @author SK
- * @date 2024/06/05
  */
 @Data
 @Builder

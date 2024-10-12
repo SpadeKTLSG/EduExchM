@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 /**
  * 券视图传递DTO
  * <p>用于传递券的信息</p>
- *
- * @author SK
- * @date 2024/06/04
  */
 @Data
 @Builder

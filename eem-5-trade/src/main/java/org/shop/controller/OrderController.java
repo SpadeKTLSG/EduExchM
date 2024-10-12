@@ -2,15 +2,16 @@ package org.shop.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shop.common.constant.SystemConstant;
-import com.shop.pojo.dto.OrderAllDTO;
-import com.shop.pojo.res.Result;
-import com.shop.serve.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.SystemConstant;
+import org.shop.entity.dto.OrderAllDTO;
+import org.shop.entity.res.Result;
+import org.shop.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -20,10 +21,11 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Order", description = "订单")
 @RequestMapping("/admin/order")
 @RestController
+@RequiredArgsConstructor
 public class OrderController {
 
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
 
     //! Func

@@ -8,9 +8,6 @@ import lombok.experimental.Accessors;
 
 /**
  * 交易核心
- *
- * @author SK
- * @date 2024/05/30
  */
 @Data
 @Builder

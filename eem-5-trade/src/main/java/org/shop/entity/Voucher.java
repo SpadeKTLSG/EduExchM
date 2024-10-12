@@ -30,6 +30,7 @@ public class Voucher {
     public static final Integer BASIC = 0;
     public static final Integer SENIOR = 1;
     public static final Integer SUPER = 2;
+
     /**
      * 主键
      */
@@ -89,4 +90,6 @@ public class Voucher {
      * 对应用户id
      */
     private Long userId;
+
+
 }

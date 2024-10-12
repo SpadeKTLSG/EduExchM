@@ -3,18 +3,23 @@ package org.shop.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
+import org.shop.common.constant.ServiceConstant;
+import org.shop.common.constant.TestsConstant;
 import org.shop.common.context.UserHolder;
 import org.shop.common.exception.BadArgsException;
 import org.shop.common.exception.SthNotFoundException;
 import org.shop.common.exception.TrashException;
+import org.shop.entity.Order;
 import org.shop.entity.Voucher;
 import org.shop.entity.dto.VoucherAllDTO;
 import org.shop.entity.dto.VoucherLocateDTO;
+import org.shop.mapper.VoucherMapper;
 import org.shop.service.OrderService;
 import org.shop.service.VoucherService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +30,14 @@ import java.util.Objects;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> implements VoucherService {
 
 
-    private UserFuncService userFuncService;
+    private final OrderService orderService;
 
-    private OrderService orderService;
+
+    //private final UserFuncService userFuncService;
 
 
     @Override
@@ -48,7 +55,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     public void putVoucherA(VoucherAllDTO voucherAllDTO) {
         Voucher voucher = new Voucher();
         BeanUtils.copyProperties(voucherAllDTO, voucher);
-        voucher.setUserId(STORE_USERID); //存到默认仓库用户
+        voucher.setUserId(TestsConstant.STORE_USERID); //存到默认仓库用户
         this.save(voucher);
     }
 
@@ -59,11 +66,11 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         Voucher voucher = this.getOne(new LambdaQueryWrapper<Voucher>()
                 .eq(Voucher::getName, voucherLocateDTO.getName())
-                .eq(Voucher::getUserId, STORE_USERID));
+                .eq(Voucher::getUserId, TestsConstant.STORE_USERID));
 
-        if (voucher == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (voucher == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
-        if (voucher.getStock() <= 0) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (voucher.getStock() <= 0) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
 
         voucher.setStock(voucher.getStock() - 1);
@@ -90,18 +97,18 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 .eq(Voucher::getName, voucherLocateDTO.getName())
                 .eq(Voucher::getUserId, UserHolder.getUser().getId()));
 
-        if (voucher == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (voucher == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         if (Objects.equals(voucher.getStatus(), Voucher.USED) || Objects.equals(voucher.getStatus(), Voucher.OUTDATE) || voucher.getStock() == 0)
-            throw new TrashException(TRASH_ERROR);
+            throw new TrashException(MessageConstant.TRASH_ERROR);
 
-        if (Objects.equals(voucher.getUser(), Voucher.BUYER)) throw new BadArgsException(BAD_ARGS);
+        if (Objects.equals(voucher.getUser(), Voucher.BUYER)) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
 
         //执行功能: 修改当前Voucher对象
         voucher.setStatus(Voucher.USED);
         voucher.setBeginTime(LocalDateTime.now());
-        voucher.setEndTime(LocalDateTime.now().plusDays(UPSHOW_LEVEL_TTL[voucher.getFunc()]));
+        voucher.setEndTime(LocalDateTime.now().plusDays(ServiceConstant.UPSHOW_LEVEL_TTL[voucher.getFunc()]));
 
         this.updateById(voucher);
 
@@ -128,18 +135,18 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 .eq(Voucher::getName, voucherLocateDTO.getName())
                 .eq(Voucher::getUserId, UserHolder.getUser().getId()));
 
-        if (voucher == null) throw new SthNotFoundException(OBJECT_NOT_ALIVE);
+        if (voucher == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         if (Objects.equals(voucher.getStatus(), Voucher.USED) || Objects.equals(voucher.getStatus(), Voucher.OUTDATE) || voucher.getStock() == 0)
-            throw new TrashException(TRASH_ERROR);
+            throw new TrashException(MessageConstant.TRASH_ERROR);
 
-        if (Objects.equals(voucher.getUser(), Voucher.SELLER)) throw new BadArgsException(BAD_ARGS);
+        if (Objects.equals(voucher.getUser(), Voucher.SELLER)) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
 
         //执行功能: 修改当前Voucher对象
         voucher.setStatus(Voucher.USED);
         voucher.setBeginTime(LocalDateTime.now());
-        voucher.setEndTime(LocalDateTime.now().plusDays(UPSHOW_LEVEL_TTL[voucher.getFunc()]));
+        voucher.setEndTime(LocalDateTime.now().plusDays(ServiceConstant.UPSHOW_LEVEL_TTL[voucher.getFunc()]));
 
         this.updateById(voucher);
 

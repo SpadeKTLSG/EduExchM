@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 订单完全DTO
- *
- * @author SK
- * @date 2024/06/05
  */
 @Data
 @Builder
