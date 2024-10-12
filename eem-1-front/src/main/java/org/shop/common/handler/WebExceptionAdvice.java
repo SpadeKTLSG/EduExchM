@@ -2,6 +2,7 @@ package org.shop.common.handler;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
 import org.shop.common.exception.BaseException;
 import org.shop.entity.res.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,11 +28,11 @@ public class WebExceptionAdvice {
 
         if (e.getMessage().contains("Duplicate entry")) { //SQL异常 : 主键重复
 //            log.error("主键重复 -> ", e); //需要打印堆栈就打开这个
-            return Result.error(OBJECT_HAS_ALIVE);
+            return Result.error(MessageConstant.OBJECT_HAS_ALIVE);
         }
 
         log.error(e.toString(), e);
-        return Result.error(UNKNOWN_ERROR);
+        return Result.error(MessageConstant.UNKNOWN_ERROR);
     }
 
 }

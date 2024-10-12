@@ -1,25 +1,21 @@
 package org.shop.flow.mq;
 
 import com.alibaba.fastjson.JSON;
-import com.shop.common.exception.BaseException;
-import com.shop.common.exception.TrashException;
-import com.shop.pojo.entity.Order;
-import com.shop.pojo.entity.OrderDetail;
-import com.shop.pojo.entity.Prod;
-import com.shop.serve.service.OrderDetailService;
-import com.shop.serve.service.OrderService;
-import com.shop.serve.service.ProdService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
+import org.shop.common.constant.RabbitMQConstant;
+import org.shop.common.exception.BaseException;
+import org.shop.common.exception.TrashException;
+import org.shop.entity.OrderDetail;
+import org.shop.service.OrderDetailService;
+import org.shop.service.OrderService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
-import static com.shop.common.constant.MessageConstant.BLOCK_ACTION;
-import static com.shop.common.constant.RabbitMQConstant.QUEUE;
 
 
 /**
@@ -28,20 +24,21 @@ import static com.shop.common.constant.RabbitMQConstant.QUEUE;
 @Slf4j
 @Component
 @Lazy(false) //解决懒加载问题
+@RequiredArgsConstructor
 public class MQReceiver {
 
 
-    private ProdService prodService;
+//    private final ProdService prodService;
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    private OrderDetailService orderDetailService;
+    private final OrderDetailService orderDetailService;
 
     /**
      * 接收秒杀信息并执行后续下单流程
      */
     @Transactional
-    @RabbitListener(queues = QUEUE)
+    @RabbitListener(queues = RabbitMQConstant.QUEUE)
     public void receiveSeckillMessage(String msg) {
         log.debug("MQ准备处理秒杀订单消息: " + msg);
 
@@ -87,7 +84,7 @@ public class MQReceiver {
             }
         } catch (Exception e) {
             log.error("库存不足 {}", e.getMessage());
-            throw new BaseException(BLOCK_ACTION);
+            throw new BaseException(MessageConstant.BLOCK_ACTION);
         }
 
         log.debug("恭喜, 一个秒杀逻辑订单创建成功!");

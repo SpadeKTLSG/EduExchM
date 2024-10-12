@@ -2,11 +2,9 @@ package org.shop.flow.mq;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.RabbitMQConstant;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static com.shop.common.constant.RabbitMQConstant.EXCHANGE;
 
 /**
  * 消息发送者
@@ -23,7 +21,7 @@ public class MQSender {
      */
     public void sendSeckillMessage(String msg) {
         log.debug("MQ发送消息" + msg);
-        rabbitTemplate.convertAndSend(EXCHANGE, msg);
+        rabbitTemplate.convertAndSend(RabbitMQConstant.EXCHANGE, msg);
     }
 
 }

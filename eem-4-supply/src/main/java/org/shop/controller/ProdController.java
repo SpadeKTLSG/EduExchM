@@ -1,18 +1,18 @@
 package org.shop.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.shop.common.constant.SystemConstant;
-import com.shop.pojo.dto.ProdCateAllDTO;
-import com.shop.pojo.dto.ProdLocateDTO;
-import com.shop.pojo.res.Result;
-import com.shop.serve.service.ProdCateService;
-import com.shop.serve.service.ProdService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.SystemConstant;
+import org.shop.entity.dto.ProdCateAllDTO;
+import org.shop.entity.dto.ProdLocateDTO;
+import org.shop.entity.res.Result;
+import org.shop.service.ProdCateService;
+import org.shop.service.ProdService;
 import org.springframework.web.bind.annotation.*;
 
 /**

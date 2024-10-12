@@ -13,17 +13,15 @@ import java.util.Properties;
  * 邮件工具类
  *
  * @author haopengmai / SpadeK
- * @date 2023/11
- * @reference haopengmai/dianping
  */
-public class MailUtil {
+public interface MailUtil {
 
-    public static void testMail() throws MessagingException {
+    static void testMail() throws MessagingException {
         sendtoMail("2429355985@qq.com", achieveCode());
     }
 
     //发送email处的代码
-    public static void sendtoMail(String email, String code) throws MessagingException {
+    static void sendtoMail(String email, String code) throws MessagingException {
         // 创建Properties 类用于记录邮箱的一些属性
         Properties props = new Properties();
         // 表示SMTP发送邮件，必须进行身份验证
@@ -64,7 +62,7 @@ public class MailUtil {
     }
 
     //用来产生一个验证码的逻辑代码
-    public static String achieveCode() {  //由于数字 1 、 0 和字母 O 、l 有时分不清楚，所以，没有数字 1 、 0
+    static String achieveCode() {  //由于数字 1 、 0 和字母 O 、l 有时分不清楚，所以，没有数字 1 、 0
         String[] beforeShuffle = new String[]{"2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F",
                 "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a",
                 "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",

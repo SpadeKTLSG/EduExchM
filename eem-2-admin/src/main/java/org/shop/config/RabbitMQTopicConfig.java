@@ -1,5 +1,6 @@
 package org.shop.config;
 
+import org.shop.common.constant.RabbitMQConstant;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
@@ -7,8 +8,6 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static com.shop.common.constant.RabbitMQConstant.*;
 
 
 /**
@@ -24,7 +23,7 @@ public class RabbitMQTopicConfig {
      */
     @Bean
     public Queue myQueue() {
-        return new Queue(QUEUE);
+        return new Queue(RabbitMQConstant.QUEUE);
     }
 
     /**
@@ -32,7 +31,7 @@ public class RabbitMQTopicConfig {
      */
     @Bean
     public FanoutExchange easyExchange() {
-        return new FanoutExchange(EXCHANGE);
+        return new FanoutExchange(RabbitMQConstant.EXCHANGE);
     }
 
     /**

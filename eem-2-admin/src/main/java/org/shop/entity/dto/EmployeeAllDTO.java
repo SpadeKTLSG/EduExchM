@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 员工完全DTO
- *
- * @author SK
- * @date 2024/06/10
  */
 @Data
 @Builder

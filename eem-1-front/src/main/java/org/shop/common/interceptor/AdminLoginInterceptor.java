@@ -1,9 +1,9 @@
 package org.shop.common.interceptor;
 
 
-import com.shop.common.context.EmployeeHolder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.shop.common.context.EmployeeHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**

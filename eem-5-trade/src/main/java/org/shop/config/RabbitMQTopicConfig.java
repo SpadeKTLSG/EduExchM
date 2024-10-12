@@ -8,8 +8,6 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.shop.common.constant.RabbitMQConstant.*;
-
 
 /**
  * RabbitMQ配置

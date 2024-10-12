@@ -161,11 +161,11 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         //对目前开启的交易判定是否存在, 存在则视为一次准入成功, 对用户进行增加嘉奖值操作(否则没有奖励)
 
         Order order = orderService.getOne(new LambdaQueryWrapper<Order>()
-                .eq(Order::getBuyerId, BUYER_USERID));
+                .eq(Order::getBuyerId, TestsConstant.BUYER_USERID));
 
         if (order == null) return false;
 
-        UserFunc userFunc2 = userFuncService.getById(BUYER_USERID);
+        UserFunc userFunc2 = userFuncService.getById(TestsConstant.BUYER_USERID);
         userFunc2.setGodhit(userFunc2.getGodhit() + 1);
         userFuncService.updateById(userFunc2);
 

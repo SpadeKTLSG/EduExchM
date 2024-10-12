@@ -2,23 +2,16 @@ package org.shop.common.interceptor;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
-import com.shop.common.context.UserHolder;
-import com.shop.common.exception.AccountNotFoundException;
-import com.shop.common.exception.NotLoginException;
-import com.shop.pojo.dto.UserLocalDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.context.UserHolder;
+import org.shop.common.exception.NotLoginException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static com.shop.common.constant.MessageConstant.ACCOUNT_NOT_FOUND;
-import static com.shop.common.constant.MessageConstant.USER_NOT_LOGIN;
-import static com.shop.common.constant.RedisConstant.LOGIN_USER_KEY_GUEST;
-import static com.shop.common.constant.RedisConstant.LOGIN_USER_TTL_GUEST;
 
 
 /**
