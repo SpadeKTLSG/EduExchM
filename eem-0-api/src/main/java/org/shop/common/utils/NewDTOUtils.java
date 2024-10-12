@@ -11,9 +11,6 @@ import java.beans.PropertyDescriptor;
 
 /**
  * 自制需要Service的工具类
- *
- * @author SK
- * @date 2024/06/02
  */
 @Component
 @Slf4j

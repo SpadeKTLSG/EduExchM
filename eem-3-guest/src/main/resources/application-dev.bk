@@ -10,7 +10,7 @@ eduexch:
     host:
     port:
     password:
-    database: 7 #Admin是7号
+     database: 8
   alioss: #对象存储
     endpoint:
     access-key-id:

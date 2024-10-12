@@ -5,8 +5,9 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.shop.pojo.res.RedisData;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.RedisConstant;
+import org.shop.entity.res.RedisData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -16,8 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import static com.shop.common.constant.RedisConstant.*;
 
 
 /**
@@ -65,7 +64,7 @@ public class CacheClient {
 
 
         if (r == null) {
-            stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
+            stringRedisTemplate.opsForValue().set(key, "", RedisConstant.CACHE_NULL_TTL, TimeUnit.MINUTES);
             return null;
         }
 
@@ -96,7 +95,7 @@ public class CacheClient {
         }
 
         //过期，尝试获取互斥锁
-        String lockKey = LOCK_EG_KEY + id;
+        String lockKey = RedisConstant.LOCK_EG_KEY + id;
         boolean flag = tryLock(lockKey);
 
         //获取到了锁
@@ -131,7 +130,7 @@ public class CacheClient {
             return null;
         }
 
-        String lockKey = LOCK_EG_KEY + id;
+        String lockKey = RedisConstant.LOCK_EG_KEY + id;
         R r = null;
         try {
 
@@ -143,7 +142,7 @@ public class CacheClient {
             r = dbFallback.apply(id);
 
             if (r == null) {
-                stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
+                stringRedisTemplate.opsForValue().set(key, "", RedisConstant.CACHE_NULL_TTL, TimeUnit.MINUTES);
                 return null;
             }
 

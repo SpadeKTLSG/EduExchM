@@ -95,7 +95,7 @@ public interface RedisConstant {
     /**
      * 缓存空数据时间
      */
-    Long CACHE_NULL_TTL = 2L; // 2 分钟
+    Long RedisConstants.CACHE_NULL_TTL  =2L; // 2 分钟
 
     /**
      * 对象锁示例

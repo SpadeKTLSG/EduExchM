@@ -1,9 +1,11 @@
-# 这个是Admin主配置文件, application-dev是生产配置文件(需要手动修改提供的application-dev.bk)
 server:
-  port: 8085 # 服务端口
+  port: 10081 # 服务端口
 
 
 spring:
+
+  application:
+    name: front
 
   profiles:
     active: dev   # 环境 dev|test|prod
@@ -126,15 +128,10 @@ logging:
   pattern:
     dateformat: mm:ss.SSS
 
+
 # 自定义
 eduexch:
 
-  # AliOSS
-  alioss:
-    endpoint: ${eduexch.alioss.endpoint}
-    access-key-id: ${eduexch.alioss.access-key-id}
-    access-key-secret: ${eduexch.alioss.access-key-secret}
-    bucket-name: ${eduexch.alioss.bucket-name}
 
 
 # 禁止 Actuator 监控 Redis 连接

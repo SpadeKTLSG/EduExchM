@@ -8,7 +8,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * 管理端启动类
+ * 管理项目启动类
  */
 @Slf4j
 @SpringBootApplication
