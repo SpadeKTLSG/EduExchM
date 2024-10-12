@@ -1,0 +1,18 @@
+eduexch:
+  datasource: #自定义数据源
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host:
+    port:
+    database: EduExch
+    username:
+    password:
+  redis: #Redis
+    host:
+    port:
+    password:
+    database: 7 #Admin是7号
+  alioss: #对象存储
+    endpoint:
+    access-key-id:
+    access-key-secret:
+    bucket-name:

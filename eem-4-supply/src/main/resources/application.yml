@@ -1,0 +1,150 @@
+# 这个是Admin主配置文件, application-dev是生产配置文件(需要手动修改提供的application-dev.bk)
+server:
+  port: 8085 # 服务端口
+
+
+spring:
+
+  profiles:
+    active: dev   # 环境 dev|test|prod
+
+  main:
+
+    allow-circular-references: true # 允许循环引用
+    allow-bean-definition-overriding: true # 允许覆盖bean定义
+    lazy-initialization: false # 关闭懒加载, 防止组件失效
+
+  # MySQL
+  datasource:
+
+    # dataSource
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: ${eduexch.datasource.driver-class-name}
+    url: jdbc:mysql://${eduexch.datasource.host}:${eduexch.datasource.port}/${eduexch.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${eduexch.datasource.username}
+    password: ${eduexch.datasource.password}
+
+
+    # druid
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall,log4j
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+
+  # Redis
+  data:
+    redis:
+      host: ${eduexch.redis.host}
+      port: ${eduexch.redis.port}
+      password: ${eduexch.redis.password}
+      database: ${eduexch.redis.database}
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 1
+          time-between-eviction-runs: 10s
+      timeout: 20000            # 超时时间: 20s
+
+  # RabbitMQ
+  rabbitmq:
+    host: ${eduexch.rabbitmq.host}
+    username: ${eduexch.rabbitmq.username}
+    password: ${eduexch.rabbitmq.password}
+    virtual-host: ${eduexch.rabbitmq.virtual-host}
+    port: ${eduexch.rabbitmq.port}
+
+    listener:
+      simple:
+        concurrency: 10
+        max-concurrency: 10
+        prefetch: 1
+        auto-startup: true
+        default-requeue-rejected: true
+
+    template:
+      retry:
+        enabled: true
+        initial-interval: 1000ms
+        max-attempts: 3
+        max-interval: 10000ms
+        multiplier: 1
+
+
+  #文件上传
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      enabled: true
+
+
+  #时间格式
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null # JSON处理时忽略非空字段
+
+
+
+
+# mybaits-plus配置
+mybatis-plus:
+
+  mapper-locations: classpath*:/mapper/*Mapper.xml  # MyBatis Mapper所对应的XML文件位置
+
+  global-config:
+
+    banner: false    # 关闭MP3.0自带的banner
+
+    db-config:
+      # 主键类型 0:数据库ID自增 1.未定义 2.用户输入 3 id_worker 4.uuid 5.id_worker字符串表示
+      id-type: AUTO
+
+      table-underline: true # 默认数据库表下划线命名
+
+
+# 日志配置
+logging:
+
+  level:
+    com.shop:
+      DEBUG
+
+  pattern:
+    dateformat: mm:ss.SSS
+
+# 自定义
+eduexch:
+
+  # AliOSS
+  alioss:
+    endpoint: ${eduexch.alioss.endpoint}
+    access-key-id: ${eduexch.alioss.access-key-id}
+    access-key-secret: ${eduexch.alioss.access-key-secret}
+    bucket-name: ${eduexch.alioss.bucket-name}
+
+
+# 禁止 Actuator 监控 Redis 连接
+management:
+  health:
+    redis:
+      enabled: false
+
+# springdoc
+springdoc:
+  # swagger
+  swagger-ui:
+    path: admin.html # http://localhost:8085/admin.html
