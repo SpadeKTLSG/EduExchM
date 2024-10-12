@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.SystemConstant;
 import org.shop.entity.dto.EmployeeAllDTO;
 import org.shop.entity.dto.EmployeeDTO;
 import org.shop.entity.dto.EmployeeLoginDTO;
@@ -138,7 +139,7 @@ public class EmployeeController {
     @Parameters(@Parameter(name = "current", description = "当前页", required = true))
     public Result pageEmployeeA(@RequestParam(value = "current", defaultValue = "1") Integer current) {
 
-        return Result.success(employeeService.page(new Page<>(current, MAX_PAGE_SIZE)).convert(employee -> {
+        return Result.success(employeeService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)).convert(employee -> {
             EmployeeVO employeeVO = new EmployeeVO();
             BeanUtils.copyProperties(employee, employeeVO);
             return employeeVO;

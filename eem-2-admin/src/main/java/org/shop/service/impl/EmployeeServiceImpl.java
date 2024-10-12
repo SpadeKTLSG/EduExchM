@@ -8,8 +8,11 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpSession;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.common.constant.MessageConstant;
 import org.shop.common.constant.PasswordConstant;
+import org.shop.common.constant.RedisConstant;
 import org.shop.common.exception.AccountAlivedException;
 import org.shop.common.exception.InvalidInputException;
 import org.shop.common.utils.RegexUtil;
@@ -49,43 +52,44 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public String sendCodeA(String phone, HttpSession session) {
 
-        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(PHONE_INVALID);
+        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(MessageConstant.PHONE_INVALID);
 
-        Set<String> keys = stringRedisTemplate.keys(LOGIN_USER_KEY_ADMIN + phone + "*"); //删除之前的验证码
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_ADMIN + phone + "*"); //删除之前的验证码
         if (keys != null) {
             stringRedisTemplate.delete(keys);
         }
 
         String code = RandomUtil.randomNumbers(6); //简单生成(管理员端)
 
-        stringRedisTemplate.opsForValue().set(LOGIN_CODE_KEY_ADMIN + phone, code, LOGIN_CODE_TTL_ADMIN, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set(RedisConstant.LOGIN_CODE_KEY_ADMIN + phone, code, RedisConstant.LOGIN_CODE_TTL_ADMIN, TimeUnit.MINUTES);
 
         return code; //调试环境: 返回验证码; 未来引入邮箱发送验证码
     }
 
 
     @Override
+    @SneakyThrows
     public String loginA(EmployeeLoginDTO employeeLoginDTO, HttpSession session) {
 
         //删除掉之前本地的所有登陆令牌
         // ? (localhost环境) 仅本地调试时使用
-        Set<String> keys = stringRedisTemplate.keys(LOGIN_USER_KEY_ADMIN + "*");
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_ADMIN + "*");
         if (keys != null) {
             stringRedisTemplate.delete(keys);
         }
 
         //校验手机号
         String phone = employeeLoginDTO.getPhone();
-        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(PHONE_INVALID);
+        if (RegexUtil.isPhoneInvalid(phone)) throw new InvalidInputException(MessageConstant.PHONE_INVALID);
 
         //从redis获取验证码并校验
-        String cacheCode = stringRedisTemplate.opsForValue().get(LOGIN_CODE_KEY_ADMIN + phone);
+        String cacheCode = stringRedisTemplate.opsForValue().get(RedisConstant.LOGIN_CODE_KEY_ADMIN + phone);
         String code = employeeLoginDTO.getCode();
-        if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(CODE_INVALID);
+        if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(MessageConstant.CODE_INVALID);
 
         //根据用户名查询用户
         Employee employee = query().eq("account", employeeLoginDTO.getAccount()).one();
-        if (employee == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (employee == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
 
         // 随机生成token，作为登录令牌
@@ -97,9 +101,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                         .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
 
         // 存储
-        String tokenKey = LOGIN_USER_KEY_ADMIN + token;
+        String tokenKey = RedisConstant.LOGIN_USER_KEY_ADMIN + token;
         stringRedisTemplate.opsForHash().putAll(tokenKey, employeeMap);
-        stringRedisTemplate.expire(tokenKey, LOGIN_USER_TTL_ADMIN, TimeUnit.MINUTES);
+        stringRedisTemplate.expire(tokenKey, RedisConstant.LOGIN_USER_TTL_ADMIN, TimeUnit.MINUTES);
 
         return token;
     }
@@ -108,7 +112,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public void logoutA() {
         //删除掉之前的所有登陆令牌 (单机调试模式)
-        Set<String> keys = stringRedisTemplate.keys(LOGIN_USER_KEY_ADMIN + "*");
+        Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_ADMIN + "*");
         if (keys != null) {
             stringRedisTemplate.delete(keys);
         }
@@ -122,7 +126,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public void postEmployeeA(EmployeeDTO employeeDTO) {
 
         if (this.query().eq("account", employeeDTO.getAccount()).count() > 0) {
-            throw new AccountAlivedException(ACCOUNT_ALIVED);
+            throw new AccountAlivedException(MessageConstant.ACCOUNT_ALIVED);
         }
 
         Employee employee = new Employee();
@@ -136,9 +140,10 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
 
     @Override
+    @SneakyThrows
     public void deleteEmployeeA(String account) {
         Employee employee = this.getOne(Wrappers.<Employee>lambdaQuery().eq(Employee::getAccount, account));
-        if (employee == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (employee == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         this.removeById(employee.getId());
     }
 
@@ -148,13 +153,15 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
     @Override
     @Transactional
+    @SneakyThrows
     public void putEmployeeA(EmployeeAllDTO employeeAllDTO) {
 
 
         Optional<Employee> optionalEmployee = Optional.ofNullable(this.getOne(Wrappers.<Employee>lambdaQuery().eq(Employee::getAccount, employeeAllDTO.getAccount())));
-        if (optionalEmployee.isEmpty()) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (optionalEmployee.isEmpty()) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         // 选择性更新
+        // FIXME
         Employee e2 = optionalEmployee.get(); //获取原始对象
         String[] nullPropertyNames = getNullPropertyNames(employeeAllDTO); //获取所有的空属性名
         BeanUtils.copyProperties(employeeAllDTO, e2, nullPropertyNames);
@@ -169,9 +176,10 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     //! QUERY
 
     @Override
+    @SneakyThrows
     public EmployeeVO getEmployeeA(String account) {
         Employee employee = this.getOne(Wrappers.<Employee>lambdaQuery().eq(Employee::getAccount, account));
-        if (employee == null) throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
+        if (employee == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         EmployeeVO employeeVO = new EmployeeVO();
         BeanUtils.copyProperties(employee, employeeVO);
