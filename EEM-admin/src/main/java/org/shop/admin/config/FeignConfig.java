@@ -18,4 +18,5 @@ public class FeignConfig {
         return Logger.Level.BASIC;
     }
 
+
 }
