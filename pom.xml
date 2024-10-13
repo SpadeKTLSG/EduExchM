@@ -26,6 +26,7 @@
         <module>eem-3-guest</module>
         <module>eem-4-supply</module>
         <module>eem-5-trade</module>
+        <module>EEM-api</module>
     </modules>
 
 
@@ -294,7 +295,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <build>
         <resources>
 
