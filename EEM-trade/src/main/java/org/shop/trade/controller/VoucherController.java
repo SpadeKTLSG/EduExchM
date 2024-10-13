@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.SystemConstant;
-import org.shop.supply.entity.dto.VoucherAllDTO;
-import org.shop.supply.entity.res.Result;
-import org.shop.supply.service.VoucherService;
+import org.shop.trade.common.constant.SystemConstant;
+import org.shop.trade.entity.dto.VoucherAllDTO;
+import org.shop.trade.entity.res.Result;
+import org.shop.trade.service.VoucherService;
 import org.springframework.web.bind.annotation.*;
 
 /**

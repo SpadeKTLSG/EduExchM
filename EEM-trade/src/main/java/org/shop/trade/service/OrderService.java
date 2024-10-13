@@ -1,9 +1,8 @@
 package org.shop.trade.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.shop.supply.entity.Order;
-import org.shop.supply.entity.dto.OrderAllDTO;
-import org.shop.supply.entity.vo.OrderGreatVO;
+import org.shop.trade.entity.dto.OrderAllDTO;
+import org.shop.trade.entity.vo.OrderGreatVO;
 
 
 public interface OrderService extends IService<Order> {

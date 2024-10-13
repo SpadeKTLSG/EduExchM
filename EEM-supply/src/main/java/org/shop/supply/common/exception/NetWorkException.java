@@ -1,4 +1,4 @@
-package org.shop.common.exception;
+package org.shop.supply.common.exception;
 
 /**
  * 网络异常

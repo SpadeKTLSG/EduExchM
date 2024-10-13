@@ -1,4 +1,4 @@
-package org.shop.common.utils;
+package org.shop.supply.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;

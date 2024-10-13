@@ -1,4 +1,4 @@
-package org.shop.common.enumeration;
+package org.shop.supply.common.enumeration;
 
 /**
  * 数据库操作类型

@@ -3,7 +3,7 @@ package org.shop.admin.common.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.shop.common.context.EmployeeHolder;
+import org.shop.admin.common.context.EmployeeHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**

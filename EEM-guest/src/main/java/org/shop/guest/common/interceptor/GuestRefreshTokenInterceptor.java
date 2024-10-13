@@ -5,12 +5,11 @@ import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.MessageConstant;
-import org.shop.common.constant.RedisConstant;
-import org.shop.common.context.UserHolder;
-import org.shop.common.exception.AccountNotFoundException;
-import org.shop.common.exception.NotLoginException;
-import org.shop.supply.entity.dto.UserLocalDTO;
+import org.shop.guest.common.constant.MessageConstant;
+import org.shop.guest.common.constant.RedisConstant;
+import org.shop.guest.common.context.UserHolder;
+import org.shop.guest.common.exception.NotLoginException;
+import org.shop.guest.entity.dto.UserLocalDTO;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 

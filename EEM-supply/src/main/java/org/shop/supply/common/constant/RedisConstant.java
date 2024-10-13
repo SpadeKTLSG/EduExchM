@@ -1,4 +1,4 @@
-package org.shop.common.constant;
+package org.shop.supply.common.constant;
 
 /**
  * Redis常量

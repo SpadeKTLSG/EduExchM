@@ -1,7 +1,7 @@
 package org.shop.admin.common.context;
 
 
-import org.shop.supply.entity.dto.EmployeeLocalDTO;
+import org.shop.admin.entity.dto.EmployeeLocalDTO;
 
 /**
  * 管理员上下文

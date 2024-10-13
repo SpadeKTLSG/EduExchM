@@ -7,11 +7,11 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.SystemConstant;
-import org.shop.supply.entity.dto.UserGreatDTO;
-import org.shop.supply.entity.res.Result;
-import org.shop.supply.entity.vo.UserVO;
-import org.shop.supply.service.UserService;
+import org.shop.guest.common.constant.SystemConstant;
+import org.shop.guest.entity.dto.UserGreatDTO;
+import org.shop.guest.entity.res.Result;
+import org.shop.guest.entity.vo.UserVO;
+import org.shop.guest.service.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 

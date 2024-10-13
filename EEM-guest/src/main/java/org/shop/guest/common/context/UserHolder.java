@@ -1,7 +1,7 @@
 package org.shop.guest.common.context;
 
 
-import org.shop.supply.entity.dto.UserLocalDTO;
+import org.shop.guest.entity.dto.UserLocalDTO;
 
 /**
  * 用户上下文

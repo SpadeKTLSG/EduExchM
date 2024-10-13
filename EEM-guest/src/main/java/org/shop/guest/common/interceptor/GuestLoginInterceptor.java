@@ -3,7 +3,7 @@ package org.shop.guest.common.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.shop.common.context.UserHolder;
+import org.shop.guest.common.context.UserHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**

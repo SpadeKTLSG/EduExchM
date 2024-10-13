@@ -1,4 +1,4 @@
-package org.shop.common.exception;
+package org.shop.supply.common.exception;
 
 /**
  * 垃圾数据异常(已使用或过期)

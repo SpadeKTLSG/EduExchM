@@ -4,7 +4,7 @@ package org.shop.guest.common.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.guest.common.constant.MessageConstant;
 import org.shop.guest.common.exception.BaseException;
-import org.shop.supply.entity.res.Result;
+import org.shop.guest.entity.res.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

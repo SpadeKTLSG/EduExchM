@@ -3,11 +3,11 @@ package org.shop.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpSession;
-import org.shop.supply.entity.Employee;
-import org.shop.supply.entity.dto.EmployeeAllDTO;
-import org.shop.supply.entity.dto.EmployeeDTO;
-import org.shop.supply.entity.dto.EmployeeLoginDTO;
-import org.shop.supply.entity.vo.EmployeeVO;
+import org.shop.admin.entity.Employee;
+import org.shop.admin.entity.dto.EmployeeAllDTO;
+import org.shop.admin.entity.dto.EmployeeDTO;
+import org.shop.admin.entity.dto.EmployeeLoginDTO;
+import org.shop.admin.entity.vo.EmployeeVO;
 
 
 public interface EmployeeService extends IService<Employee> {

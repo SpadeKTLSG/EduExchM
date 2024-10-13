@@ -2,8 +2,8 @@ package org.shop.guest.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.shop.supply.entity.UserFollow;
-import org.shop.supply.entity.vo.UserVO;
+import org.shop.guest.entity.UserFollow;
+import org.shop.guest.entity.vo.UserVO;
 
 import java.util.List;
 

@@ -4,11 +4,12 @@ package org.shop.guest.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpSession;
-import org.shop.supply.entity.User;
-import org.shop.supply.entity.dto.UserGreatDTO;
-import org.shop.supply.entity.dto.UserLoginDTO;
-import org.shop.supply.entity.vo.UserGreatVO;
-import org.shop.supply.entity.vo.UserVO;
+import org.shop.guest.entity.User;
+import org.shop.guest.entity.dto.UserGreatDTO;
+import org.shop.guest.entity.dto.UserLoginDTO;
+import org.shop.guest.entity.vo.UserGreatVO;
+import org.shop.guest.entity.vo.UserVO;
+
 
 public interface UserService extends IService<User> {
 

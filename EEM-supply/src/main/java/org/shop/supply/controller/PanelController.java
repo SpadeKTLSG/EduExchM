@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.SystemConstant;
+import org.shop.supply.common.constant.SystemConstant;
 import org.shop.supply.entity.dto.ProdLocateDTO;
 import org.shop.supply.entity.res.Result;
 import org.shop.supply.service.HotsearchService;
@@ -17,7 +17,7 @@ import org.shop.supply.service.UpshowService;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 管理面板 4合一
+ * 管理面板
  */
 @Slf4j
 @Tag(name = "Panel", description = "管理面板")

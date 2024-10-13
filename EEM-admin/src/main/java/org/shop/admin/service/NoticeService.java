@@ -2,8 +2,9 @@ package org.shop.admin.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.shop.supply.entity.Notice;
-import org.shop.supply.entity.dto.NoticeAllDTO;
+import org.shop.admin.entity.Notice;
+import org.shop.admin.entity.dto.NoticeAllDTO;
+
 
 public interface NoticeService extends IService<Notice> {
 

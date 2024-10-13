@@ -1,4 +1,4 @@
-package org.shop.common.constant;
+package org.shop.supply.common.constant;
 
 /**
  * 服务中使用的常量

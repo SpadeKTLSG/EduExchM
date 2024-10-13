@@ -1,6 +1,7 @@
 package org.shop.admin.config;
 
-import org.shop.common.constant.RabbitMQConstant;
+
+import org.shop.admin.common.constant.RabbitMQConstant;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;

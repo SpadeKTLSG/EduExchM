@@ -1,7 +1,7 @@
 package org.shop.trade.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.shop.supply.entity.OrderDetail;
+import org.shop.trade.entity.OrderDetail;
 
 
 public interface OrderDetailService extends IService<OrderDetail> {

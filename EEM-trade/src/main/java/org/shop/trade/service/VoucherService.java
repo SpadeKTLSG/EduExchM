@@ -2,9 +2,9 @@ package org.shop.trade.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.shop.supply.entity.Voucher;
-import org.shop.supply.entity.dto.VoucherAllDTO;
-import org.shop.supply.entity.dto.VoucherLocateDTO;
+import org.shop.trade.entity.Voucher;
+import org.shop.trade.entity.dto.VoucherAllDTO;
+import org.shop.trade.entity.dto.VoucherLocateDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

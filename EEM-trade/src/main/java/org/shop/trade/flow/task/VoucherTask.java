@@ -2,9 +2,8 @@ package org.shop.trade.flow.task;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.shop.supply.entity.Voucher;
-import org.shop.supply.service.VoucherService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.shop.trade.entity.Voucher;
+import org.shop.trade.service.VoucherService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 

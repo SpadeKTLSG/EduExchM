@@ -1,15 +1,16 @@
 package org.shop.trade.flow.mq;
 
+
 import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.MessageConstant;
-import org.shop.common.constant.RabbitMQConstant;
-import org.shop.common.exception.BaseException;
-import org.shop.common.exception.TrashException;
-import org.shop.supply.entity.OrderDetail;
-import org.shop.supply.service.OrderDetailService;
-import org.shop.supply.service.OrderService;
+import org.shop.trade.common.constant.MessageConstant;
+import org.shop.trade.common.constant.RabbitMQConstant;
+import org.shop.trade.common.exception.BaseException;
+import org.shop.trade.common.exception.TrashException;
+import org.shop.trade.entity.OrderDetail;
+import org.shop.trade.service.OrderDetailService;
+import org.shop.trade.service.OrderService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

@@ -11,19 +11,19 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.MessageConstant;
-import org.shop.common.constant.PasswordConstant;
-import org.shop.common.constant.RedisConstant;
-import org.shop.common.exception.AccountAlivedException;
-import org.shop.common.exception.InvalidInputException;
-import org.shop.common.utils.RegexUtil;
-import org.shop.supply.entity.Employee;
-import org.shop.supply.entity.dto.EmployeeAllDTO;
-import org.shop.supply.entity.dto.EmployeeDTO;
-import org.shop.supply.entity.dto.EmployeeLocalDTO;
-import org.shop.supply.entity.dto.EmployeeLoginDTO;
-import org.shop.supply.entity.vo.EmployeeVO;
-import org.shop.supply.mapper.EmployeeMapper;
+import org.shop.admin.common.constant.MessageConstant;
+import org.shop.admin.common.constant.PasswordConstant;
+import org.shop.admin.common.constant.RedisConstant;
+import org.shop.admin.common.exception.AccountAlivedException;
+import org.shop.admin.common.exception.InvalidInputException;
+import org.shop.admin.common.utils.RegexUtil;
+import org.shop.admin.entity.Employee;
+import org.shop.admin.entity.dto.EmployeeAllDTO;
+import org.shop.admin.entity.dto.EmployeeDTO;
+import org.shop.admin.entity.dto.EmployeeLocalDTO;
+import org.shop.admin.entity.dto.EmployeeLoginDTO;
+import org.shop.admin.entity.vo.EmployeeVO;
+import org.shop.admin.mapper.EmployeeMapper;
 import org.shop.admin.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -162,7 +162,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         if (optionalEmployee.isEmpty()) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         // 选择性更新
-        // FIXME
         Employee e2 = optionalEmployee.get(); //获取原始对象
         String[] nullPropertyNames = getNullPropertyNames(employeeAllDTO); //获取所有的空属性名
         BeanUtils.copyProperties(employeeAllDTO, e2, nullPropertyNames);

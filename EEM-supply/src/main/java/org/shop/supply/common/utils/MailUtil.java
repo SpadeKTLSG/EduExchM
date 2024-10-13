@@ -1,4 +1,4 @@
-package org.shop.common.utils;
+package org.shop.supply.common.utils;
 
 
 import javax.mail.*;
