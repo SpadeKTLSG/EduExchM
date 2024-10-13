@@ -50,7 +50,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserDetailService userDetailService;
 
 
-//    private ProdService prodService;
+    private final ProdClient prodClient;
 
 
     private final StringRedisTemplate stringRedisTemplate;

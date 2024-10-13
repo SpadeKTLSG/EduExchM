@@ -11,8 +11,12 @@
 
     <groupId>org.shop</groupId>
     <artifactId>eem-1-front</artifactId>
+    <name>front</name>
+    <description>前端支持</description>
 
     <properties>
+        <java.version>17</java.version>
+        <maven.compiler.plugin.version>3.12.0</maven.compiler.plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
