@@ -4,9 +4,11 @@ package org.shop.admin;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
@@ -16,9 +18,11 @@ import org.springframework.web.client.RestTemplate;
  */
 @Slf4j
 @SpringBootApplication
+@ComponentScan(basePackages = "org.shop.admin.*") //扫描组件
 @EnableScheduling //开启定时任务
 @EnableAspectJAutoProxy()
-@EnableFeignClients(basePackages = "org.shop.api.feign")
+@EnableDiscoveryClient //开启服务发现
+@EnableFeignClients(basePackages = "org.shop.api.client.admin", defaultConfiguration = FeignConfig) //开启Feign客户端
 public class AdminApplication {
 
     public static void main(String[] args) {

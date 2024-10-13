@@ -9,7 +9,10 @@ spring:
 
   cloud:
     nacos:
-      server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos服务地址
+      serverAddr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos服务地址
+  #      discovery:
+  #        server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos发现地址
+
 
   profiles:
     active: dev   # 环境 dev|test|prod

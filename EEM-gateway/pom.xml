@@ -9,14 +9,9 @@
         <version>1.0.0-RELEASE</version>
     </parent>
 
-    <groupId>org.shop</groupId>
+    <groupId>org.shop.gateway</groupId>
     <artifactId>EEM-gateway</artifactId>
     <description>EduExchM网关服务</description>
-
-    <dependencies>
-        <!--        others-->
-
-    </dependencies>
 
 
     <properties>
