@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpSession;
 import org.shop.guest.entity.User;
 import org.shop.guest.entity.dto.UserGreatDTO;
 import org.shop.guest.entity.dto.UserLoginDTO;
+import org.shop.guest.entity.remote.Prod;
+import org.shop.guest.entity.remote.ProdLocateDTO;
 import org.shop.guest.entity.vo.UserGreatVO;
 import org.shop.guest.entity.vo.UserVO;
 

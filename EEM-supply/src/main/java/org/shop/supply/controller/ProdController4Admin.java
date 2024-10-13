@@ -1,5 +1,6 @@
 package org.shop.supply.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.supply.common.constant.SystemConstant;
+import org.shop.supply.entity.Prod;
 import org.shop.supply.entity.dto.ProdCateAllDTO;
 import org.shop.supply.entity.dto.ProdLocateDTO;
 import org.shop.supply.entity.res.Result;
@@ -23,14 +25,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/prod")
 @RestController
 @RequiredArgsConstructor
-public class ProdController {
+public class ProdController4Admin {
 
 
     private final ProdService prodService;
-
-
     private final ProdCateService prodCateService;
 
+
+    //! Client
+    @GetMapping("/remote/getOne")
+    public Prod getOne(@RequestBody LambdaQueryWrapper<Prod> ne) {
+        return prodService.getOne(ne);
+    }
 
     //! Func
 

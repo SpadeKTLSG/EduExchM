@@ -8,10 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Guest的Swagger配置类
+ * Swagger配置
  */
 @Configuration
-@ComponentScan(basePackages = "com.shop.guest.controller")
+@ComponentScan(basePackages = "org.shop.guest.controller")
 public class SwaggerConfig {
 
 

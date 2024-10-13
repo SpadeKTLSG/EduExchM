@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.guest.client.ProdClient;
 import org.shop.guest.common.constant.MessageConstant;
 import org.shop.guest.common.constant.PasswordConstant;
 import org.shop.guest.common.constant.RedisConstant;
@@ -22,6 +23,8 @@ import org.shop.guest.entity.User;
 import org.shop.guest.entity.UserDetail;
 import org.shop.guest.entity.UserFunc;
 import org.shop.guest.entity.dto.*;
+import org.shop.guest.entity.remote.Prod;
+import org.shop.guest.entity.remote.ProdLocateDTO;
 import org.shop.guest.entity.vo.UserGreatVO;
 import org.shop.guest.entity.vo.UserVO;
 import org.shop.guest.mapper.UserMapper;
@@ -49,11 +52,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final UserFuncService userFuncService;
     private final UserDetailService userDetailService;
 
+    private final StringRedisTemplate stringRedisTemplate;
 
     private final ProdClient prodClient;
-
-
-    private final StringRedisTemplate stringRedisTemplate;
 
 
     //! Func
@@ -229,7 +230,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         Long userId = UserHolder.getUser().getId();
 
-        Prod prod = prodService.getOne(Wrappers.<Prod>lambdaQuery()
+        Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery()
                 .eq(Prod::getUserId, prodLocateDTO.getUserId())
                 .eq(Prod::getName, prodLocateDTO.getName()));
 
@@ -309,7 +310,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String[] split = prodLocateDTO.split(":"); //分割
             Long prodUserId = Long.parseLong(split[0]);
             String prodName = split[1];
-            Prod prod = prodService.getOne(Wrappers.<Prod>lambdaQuery()
+            Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery()
                     .eq(Prod::getUserId, prodUserId)
                     .eq(Prod::getName, prodName));
             prods.add(prod);
@@ -456,6 +457,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
         UserGreatVO userGreatVO;
+
+        // 联表
+
         try {
             userGreatVO = dtoUtils.createAndCombineDTOs(UserGreatVO.class, userLocalDTO.getId(), UserAllDTO.class, UserDetailAllDTO.class, UserFuncAllDTO.class);
         } catch (Exception e) {

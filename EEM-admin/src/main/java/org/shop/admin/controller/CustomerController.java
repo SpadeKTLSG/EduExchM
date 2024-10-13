@@ -37,7 +37,7 @@ public class CustomerController {
         webSocketServer.sendToAllClient(JSON.toJSONString(mes));        //使用简单推送模式
         return Result.success();
     }
-    //http://localhost:8085/customer/admin/service
+    //http://localhost:10082/customer/admin/service
 
 
 }

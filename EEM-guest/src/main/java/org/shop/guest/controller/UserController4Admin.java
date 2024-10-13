@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/user")
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class UserController4Admin {
 
 
     private final UserService userService;
@@ -58,7 +58,7 @@ public class UserController {
             return Result.error(e.getMessage());
         }
     }
-    //http://localhost:8085/admin/user/update
+    //http://localhost:10083/admin/user/update
 
 
     //! QUERY
@@ -72,7 +72,7 @@ public class UserController {
     public Result getUserA(@PathVariable("account") String account) {
         return Result.success(userService.getUser8EzA(account));
     }
-    //http://localhost:8085/admin/user/cwxtlsg
+    //http://localhost:10083/admin/user/cwxtlsg
 
 
     /**
@@ -84,7 +84,7 @@ public class UserController {
     public Result getUser8IdA(@PathVariable("id") Long id) {
         return Result.success(userService.getUser8EzIdA(id));
     }
-    //http://localhost:8085/admin/user/specify/1
+    //http://localhost:10083/admin/user/specify/1
 
 
     /**
@@ -101,7 +101,7 @@ public class UserController {
             return userVO;
         }));
     }
-    //http://localhost:8085/admin/user/page
+    //http://localhost:10083/admin/user/page
 
 
     /**
@@ -117,6 +117,6 @@ public class UserController {
     public Result searchUserA(@RequestParam("account") String account, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(userService.searchUserB(account, current));
     }
-    //http://localhost:8085/admin/user/search/account?account=Store&current=1
+    //http://localhost:10083/admin/user/search/account?account=Store&current=1
 
 }

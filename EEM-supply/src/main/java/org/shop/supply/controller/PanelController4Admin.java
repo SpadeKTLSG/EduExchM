@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/panel")
 @RestController
 @RequiredArgsConstructor
-public class PanelController {
+public class PanelController4Admin {
 
     private final HotsearchService hotsearchService;
     private final RotationService rotationService;

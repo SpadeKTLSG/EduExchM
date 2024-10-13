@@ -31,7 +31,7 @@ public class OrderController {
     //! Client
     @GetMapping("/remote/getOne")
     public Order getOne(@RequestBody LambdaQueryWrapper<Order> ne) {
-        return null;
+        return orderService.getOne(ne);
     }
 
     //! Func

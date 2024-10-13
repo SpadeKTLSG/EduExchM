@@ -16,6 +16,7 @@ import org.shop.admin.common.constant.PasswordConstant;
 import org.shop.admin.common.constant.RedisConstant;
 import org.shop.admin.common.exception.AccountAlivedException;
 import org.shop.admin.common.exception.InvalidInputException;
+import org.shop.admin.common.utils.NewBeanUtil;
 import org.shop.admin.common.utils.RegexUtil;
 import org.shop.admin.entity.Employee;
 import org.shop.admin.entity.dto.EmployeeAllDTO;
@@ -73,7 +74,6 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public String loginA(EmployeeLoginDTO employeeLoginDTO, HttpSession session) {
 
         //删除掉之前本地的所有登陆令牌
-        // ? (localhost环境) 仅本地调试时使用
         Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_ADMIN + "*");
         if (keys != null) {
             stringRedisTemplate.delete(keys);
@@ -163,12 +163,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
         // 选择性更新
         Employee e2 = optionalEmployee.get(); //获取原始对象
-        //TODO
-//        String[] nullPropertyNames = getNullPropertyNames(employeeAllDTO); //获取所有的空属性名
-////        BeanUtils.copyProperties(employeeAllDTO, e2, nullPropertyNames);
-////
-////        Optional.ofNullable(employeeAllDTO.getPassword()) //手动调整密码生成
-////                .ifPresent(password -> e2.setPassword(DigestUtils.md5DigestAsHex(password.getBytes())));
+
+        String[] nullPropertyNames = NewBeanUtil.getNullPropertyNames(employeeAllDTO); //获取所有的空属性名
+        BeanUtils.copyProperties(employeeAllDTO, e2, nullPropertyNames);
+
+        Optional.ofNullable(employeeAllDTO.getPassword()) //手动调整密码生成
+                .ifPresent(password -> e2.setPassword(DigestUtils.md5DigestAsHex(password.getBytes())));
 
         this.updateById(e2);
     }

@@ -5,6 +5,13 @@ import feign.okhttp.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Feign配置
+ */
+
+/**
+ * Feign配置
+ */
 @Configuration
 public class FeignConfig {
 

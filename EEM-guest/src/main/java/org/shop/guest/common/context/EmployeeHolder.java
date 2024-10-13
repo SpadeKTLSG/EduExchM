@@ -1,6 +1,8 @@
 package org.shop.guest.common.context;
 
 
+import org.shop.guest.entity.remote.EmployeeLocalDTO;
+
 /**
  * 管理员上下文
  */
