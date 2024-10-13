@@ -1,4 +1,4 @@
-package org.shop.api.client.supply;
+package org.shop.supply.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 

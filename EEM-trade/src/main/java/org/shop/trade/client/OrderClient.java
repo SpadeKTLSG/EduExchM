@@ -1,7 +1,7 @@
-package org.shop.api.client.trade;
+package org.shop.trade.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 
-@FeignClient(name = "order")
+@FeignClient(name = "trade")
 public interface OrderClient {
 }

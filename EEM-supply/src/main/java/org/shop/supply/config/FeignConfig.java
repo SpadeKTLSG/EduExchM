@@ -1,4 +1,4 @@
-package org.shop.api.config;
+package org.shop.supply.config;
 
 import feign.Logger;
 import feign.okhttp.OkHttpClient;
@@ -17,5 +17,6 @@ public class FeignConfig {
     public Logger.Level logLevel() {
         return Logger.Level.BASIC;
     }
+
 
 }
