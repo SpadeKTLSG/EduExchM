@@ -19,8 +19,6 @@
     <description>EduExchM微服务父工程目录</description>
 
     <modules>
-
-        <module>EEM-api</module>
         <module>EEM-gateway</module>
         <module>EEM-admin</module>
         <module>EEM-guest</module>
@@ -263,6 +261,15 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway-mvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <!--加载bootstrap-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
         <!--Feign-->
         <dependency>

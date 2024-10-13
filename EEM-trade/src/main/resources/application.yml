@@ -128,17 +128,20 @@ logging:
   pattern:
     dateformat: mm:ss.SSS
 
+
 # 自定义
 eduexch:
 
 
 
-
-# 禁止 Actuator 监控 Redis 连接
+# 禁止监控
 management:
   health:
     redis:
       enabled: false
+    rabbit:
+      enabled: false
+
 
 # springdoc
 springdoc:

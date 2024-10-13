@@ -3,7 +3,8 @@ server:
 
 
 spring:
-  autoconfigure:
+
+  autoconfigure: # 排除数据库自动配置
     exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 
@@ -12,7 +13,41 @@ spring:
 
   cloud:
     nacos:
-      server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos服务地址
+      discovery:
+        server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos发现地址
+      config:
+        server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos配置中心地址
+
+    gateway:
+      routes:
+        - id: user-service # 路由标示，必须唯一
+          uri: lb://userservice # 路由的目标地址
+          predicates: # 路由断言，判断请求是否符合规则
+            - Path=/user/** # 路径断言，判断路径是否是以/user开头，如果是则符合
+        - id: order-service
+          uri: lb://orderservice
+          predicates:
+            - Path=/order/**
+          filters:
+            - AddRequestHeader=key, value
+
+  #
+  #
+  #      globalcors: # 全局的跨域处理
+  #        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
+  #        corsConfigurations:
+  #          "[/**]":
+  #            allowedOrigins: # 允许哪些网站的跨域请求
+  #              - "http://localhost:8090"
+  #            allowedMethods: # 允许的跨域ajax的请求方式
+  #              - "GET"
+  #              - "POST"
+  #              - "DELETE"
+  #              - "PUT"
+  #              - "OPTIONS"
+  #            allowedHeaders: "*" # 允许在请求中携带的头信息
+  #            allowCredentials: true # 是否允许携带cookie
+  #            maxAge: 360000 # 这次跨域检测的有效期
 
   profiles:
     active: dev   # 环境 dev|test|prod
@@ -54,11 +89,15 @@ logging:
 eduexch:
 
 
-# 禁止 Actuator 监控 Redis 连接
+
+# 禁止监控
 management:
   health:
     redis:
       enabled: false
+    rabbit:
+      enabled: false
+
 
 # springdoc
 springdoc:
