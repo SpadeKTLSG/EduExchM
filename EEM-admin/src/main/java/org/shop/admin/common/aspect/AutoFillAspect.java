@@ -27,7 +27,7 @@ public class AutoFillAspect {
     /**
      * 切入点
      */
-    @Pointcut("execution(* org.shop.service.*.*(..)) && @annotation(org.shop.common.annotation.AutoFill)")
+    @Pointcut("execution(* org.shop.admin.service.*.*(..)) && @annotation(org.shop.admin.common.annotation.AutoFill)")
     public void autoFillPointCut() {
     }
 

@@ -163,11 +163,12 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
 
         // 选择性更新
         Employee e2 = optionalEmployee.get(); //获取原始对象
-        String[] nullPropertyNames = getNullPropertyNames(employeeAllDTO); //获取所有的空属性名
-        BeanUtils.copyProperties(employeeAllDTO, e2, nullPropertyNames);
-
-        Optional.ofNullable(employeeAllDTO.getPassword()) //手动调整密码生成
-                .ifPresent(password -> e2.setPassword(DigestUtils.md5DigestAsHex(password.getBytes())));
+        //TODO
+//        String[] nullPropertyNames = getNullPropertyNames(employeeAllDTO); //获取所有的空属性名
+////        BeanUtils.copyProperties(employeeAllDTO, e2, nullPropertyNames);
+////
+////        Optional.ofNullable(employeeAllDTO.getPassword()) //手动调整密码生成
+////                .ifPresent(password -> e2.setPassword(DigestUtils.md5DigestAsHex(password.getBytes())));
 
         this.updateById(e2);
     }
