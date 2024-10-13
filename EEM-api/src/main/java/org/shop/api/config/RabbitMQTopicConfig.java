@@ -1,7 +1,7 @@
-package org.shop.guest.config;
+package org.shop.api.config;
 
 
-import org.shop.guest.common.constant.RabbitMQConstant;
+import org.shop.api.common.constant.RabbitMQConstant;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;

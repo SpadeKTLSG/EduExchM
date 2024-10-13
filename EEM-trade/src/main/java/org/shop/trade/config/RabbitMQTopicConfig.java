@@ -1,5 +1,7 @@
 package org.shop.trade.config;
 
+
+import org.shop.trade.common.constant.RabbitMQConstant;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.FanoutExchange;
@@ -22,7 +24,7 @@ public class RabbitMQTopicConfig {
      */
     @Bean
     public Queue myQueue() {
-        return new Queue(QUEUE);
+        return new Queue(RabbitMQConstant.QUEUE);
     }
 
     /**
@@ -30,7 +32,7 @@ public class RabbitMQTopicConfig {
      */
     @Bean
     public FanoutExchange easyExchange() {
-        return new FanoutExchange(EXCHANGE);
+        return new FanoutExchange(RabbitMQConstant.EXCHANGE);
     }
 
     /**

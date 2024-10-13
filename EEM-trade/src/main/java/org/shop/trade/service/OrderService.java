@@ -1,6 +1,7 @@
 package org.shop.trade.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.shop.trade.entity.Order;
 import org.shop.trade.entity.dto.OrderAllDTO;
 import org.shop.trade.entity.vo.OrderGreatVO;
 

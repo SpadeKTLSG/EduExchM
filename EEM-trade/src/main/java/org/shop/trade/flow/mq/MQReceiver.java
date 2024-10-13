@@ -8,6 +8,7 @@ import org.shop.trade.common.constant.MessageConstant;
 import org.shop.trade.common.constant.RabbitMQConstant;
 import org.shop.trade.common.exception.BaseException;
 import org.shop.trade.common.exception.TrashException;
+import org.shop.trade.entity.Order;
 import org.shop.trade.entity.OrderDetail;
 import org.shop.trade.service.OrderDetailService;
 import org.shop.trade.service.OrderService;

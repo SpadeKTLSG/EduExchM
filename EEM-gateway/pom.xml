@@ -11,7 +11,6 @@
 
     <groupId>org.shop</groupId>
     <artifactId>EEM-gateway</artifactId>
-    <name>gateway</name>
     <description>EduExchM网关服务</description>
 
     <dependencies>

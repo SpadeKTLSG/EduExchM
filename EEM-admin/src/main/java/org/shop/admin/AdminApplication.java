@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication
 @EnableScheduling //开启定时任务
 @EnableAspectJAutoProxy()
-@EnableFeignClients(basePackages = "org.shop.api.client", defaultConfiguration = FeignConfig.class)
+@EnableFeignClients(basePackages = "org.shop.api.feign")
 public class AdminApplication {
 
     public static void main(String[] args) {

@@ -1,5 +1,5 @@
 server:
-  port: 10000 # 服务端口
+  port: 10080 # 服务端口
 
 
 spring:
@@ -8,7 +8,7 @@ spring:
 
 
   application:
-    name: api
+    name: gateway
 
   cloud:
     nacos:
@@ -37,29 +37,6 @@ spring:
           min-idle: 1
           time-between-eviction-runs: 10s
       timeout: 20000            # 超时时间: 20s
-  # RabbitMQ
-  rabbitmq:
-    host: ${eduexch.rabbitmq.host}
-    username: ${eduexch.rabbitmq.username}
-    password: ${eduexch.rabbitmq.password}
-    virtual-host: ${eduexch.rabbitmq.virtual-host}
-    port: ${eduexch.rabbitmq.port}
-
-    listener:
-      simple:
-        concurrency: 10
-        max-concurrency: 10
-        prefetch: 1
-        auto-startup: true
-        default-requeue-rejected: true
-
-    template:
-      retry:
-        enabled: true
-        initial-interval: 1000ms
-        max-attempts: 3
-        max-interval: 10000ms
-        multiplier: 1
 
 
 # 日志配置

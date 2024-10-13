@@ -6,7 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.common.constant.RedisConstant;
+import org.shop.supply.common.constant.RedisConstant;
 import org.shop.supply.entity.res.RedisData;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
