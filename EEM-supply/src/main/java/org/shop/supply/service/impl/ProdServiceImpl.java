@@ -11,18 +11,18 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.supply.client.OrderClient;
 import org.shop.supply.common.constant.MessageConstant;
 import org.shop.supply.common.constant.RedisConstant;
 import org.shop.supply.common.constant.ServiceConstant;
 import org.shop.supply.common.constant.SystemConstant;
-import org.shop.supply.common.exception.BadArgsException;
-import org.shop.supply.common.exception.BaseException;
-import org.shop.supply.common.exception.SthHasCreatedException;
-import org.shop.supply.common.exception.SthNotFoundException;
+import org.shop.supply.common.context.UserHolder;
+import org.shop.supply.common.exception.*;
 import org.shop.supply.entity.Prod;
 import org.shop.supply.entity.ProdCate;
 import org.shop.supply.entity.ProdFunc;
 import org.shop.supply.entity.dto.*;
+import org.shop.supply.entity.remote.Order;
 import org.shop.supply.entity.res.RedisData;
 import org.shop.supply.entity.vo.ProdAllVO;
 import org.shop.supply.entity.vo.ProdGreatVO;
@@ -49,19 +49,14 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
-
     private final ProdFuncService prodFuncService;
-
     private final ProdCateService prodCateService;
-
     private final UpshowService upshowService;
-
     private final RotationService rotationService;
-
     private final HotsearchService hotsearchService;
 
 
-//    private final OrderService orderService;
+    private final OrderClient orderClient;
 
 
     //! Func
@@ -252,7 +247,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         //需要判断是否有已经开启的交易
-        Order order = orderService.getOne(Wrappers.<Order>lambdaQuery()
+        Order order = orderClient.getOne(Wrappers.<Order>lambdaQuery()
                 .eq(Order::getProdId, prod.getId())
                 .ne(Order::getStatus, Order.OVER) //已经完成的交易不算
                 .ne(Order::getStatus, Order.STOP) //已经撤销的交易不算

@@ -1,6 +1,7 @@
 package org.shop.trade.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.trade.common.constant.SystemConstant;
+import org.shop.trade.entity.Order;
 import org.shop.trade.entity.dto.OrderAllDTO;
 import org.shop.trade.entity.res.Result;
 import org.shop.trade.service.OrderService;
@@ -24,9 +26,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class OrderController {
 
-
     private final OrderService orderService;
 
+    //! Client
+    @GetMapping("/remote/getOne")
+    public Order getOne(@RequestBody LambdaQueryWrapper<Order> ne) {
+        return null;
+    }
 
     //! Func
 
