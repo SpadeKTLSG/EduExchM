@@ -19,14 +19,13 @@
     <description>EduExchM微服务父工程目录</description>
 
     <modules>
-        <module>eem-0-api</module>
-        <module>eem-0-gateway</module>
-        <module>eem-1-front</module>
-        <module>eem-2-admin</module>
-        <module>eem-3-guest</module>
-        <module>eem-4-supply</module>
-        <module>eem-5-trade</module>
+
         <module>EEM-api</module>
+        <module>EEM-gateway</module>
+        <module>EEM-admin</module>
+        <module>EEM-guest</module>
+        <module>EEM-supply</module>
+        <module>EEM-trade</module>
     </modules>
 
 
