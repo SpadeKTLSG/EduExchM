@@ -12,7 +12,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.guest.client.ProdClient;
-import org.shop.guest.common.constant.*;
+import org.shop.guest.common.constant.MessageConstant;
+import org.shop.guest.common.constant.PasswordConstant;
+import org.shop.guest.common.constant.RedisConstant;
+import org.shop.guest.common.constant.SystemConstant;
 import org.shop.guest.common.context.UserHolder;
 import org.shop.guest.common.exception.*;
 import org.shop.guest.common.utils.MailUtil;
@@ -454,7 +457,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .selectAll(UserDetail.class)
                 .leftJoin(UserFunc.class, UserFunc::getId, User::getId)
                 .leftJoin(UserDetail.class, UserDetail::getId, User::getId)
-                .eq(User::getId, TestsConstant.BUYER_USERID);
+                .eq(User::getId, userLocalDTO.getId());
         userGreatVO = userMapper.selectJoinOne(UserGreatVO.class, mpjLambdaWrapper);
 
         return userGreatVO;

@@ -33,6 +33,17 @@ public class ProdController4Guest {
     private final ProdCateService prodCateService;
 
 
+    //! Client
+    @GetMapping("/remote/getById/{id}")
+    public Prod getById(@PathVariable Long id) {
+        return prodService.getById(id);
+    }
+
+    @PostMapping("/remote/updateById")
+    public void updateById(@RequestBody Prod prod) {
+        prodService.updateById(prod);
+    }
+
     //! Func
 
 

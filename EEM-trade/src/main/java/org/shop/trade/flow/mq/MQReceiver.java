@@ -4,6 +4,7 @@ package org.shop.trade.flow.mq;
 import com.alibaba.fastjson.JSON;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.trade.client.ProdClient;
 import org.shop.trade.common.constant.MessageConstant;
 import org.shop.trade.common.constant.RabbitMQConstant;
 import org.shop.trade.common.exception.BaseException;
@@ -31,7 +32,7 @@ import java.time.LocalDateTime;
 public class MQReceiver {
 
 
-//    private final ProdService prodService;
+    private final ProdClient prodClient;
 
     private final OrderService orderService;
 
@@ -69,7 +70,7 @@ public class MQReceiver {
         //执行扣减库存和更改订单详情等具体业务
 
         //创建参数对象
-        Prod prod = prodService.getById(prod_id);
+        Prod prod = prodClient.getById(prod_id);
         prod.setStock(prod.getStock() - 1); //库存减一
 
         OrderDetail orderDetail = OrderDetail.builder()
@@ -80,9 +81,9 @@ public class MQReceiver {
         try { //数据库操作: 插入订单和订单详情(联合对象), 更新商品库存
             orderService.save(order);
             orderDetailService.save(orderDetail);
-            prodService.updateById(prod);
+            prodClient.updateById(prod);
             //cas乐观锁: 查询prod是否库存足够, 不够则抛出异常, 事务回滚无事发生
-            if (prodService.getById(prod_id).getStock() < 0) {
+            if (prodClient.getById(prod_id).getStock() < 0) {
                 throw new TrashException();
             }
         } catch (Exception e) {

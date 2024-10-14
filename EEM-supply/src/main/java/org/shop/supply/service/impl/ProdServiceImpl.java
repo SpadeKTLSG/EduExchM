@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.supply.client.OrderClient;
@@ -17,7 +18,10 @@ import org.shop.supply.common.constant.RedisConstant;
 import org.shop.supply.common.constant.ServiceConstant;
 import org.shop.supply.common.constant.SystemConstant;
 import org.shop.supply.common.context.UserHolder;
-import org.shop.supply.common.exception.*;
+import org.shop.supply.common.exception.AccountNotFoundException;
+import org.shop.supply.common.exception.BadArgsException;
+import org.shop.supply.common.exception.SthHasCreatedException;
+import org.shop.supply.common.exception.SthNotFoundException;
 import org.shop.supply.entity.Prod;
 import org.shop.supply.entity.ProdCate;
 import org.shop.supply.entity.ProdFunc;
@@ -39,6 +43,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.shop.supply.common.utils.NewBeanUtil.prodDtoMapService;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -57,7 +63,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
 
     private final OrderClient orderClient;
-
+    private final ProdMapper prodMapper;
 
     //! Func
 
@@ -279,7 +285,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         dtoServiceMap.put(createDTOFromProdGreatDTO(prodGreatDTO, ProdAllDTO.class), this);
         dtoServiceMap.put(createDTOFromProdGreatDTO(prodGreatDTO, ProdFuncAllDTO.class), prodFuncService);
 
-        dtoMapService(dtoServiceMap, optionalProd.get().getId(), optionalProd);
+        prodDtoMapService(dtoServiceMap, optionalProd.get().getId(), optionalProd);
     }
 
 
@@ -296,8 +302,8 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         dtoServiceMap.put(createDTOFromProdGreatDTO(prodGreatDTO, ProdAllDTO.class), this);
         dtoServiceMap.put(createDTOFromProdGreatDTO(prodGreatDTO, ProdFuncAllDTO.class), prodFuncService);
 
-        dtoMapService(dtoServiceMap, optionalProd.get().getId(), optionalProd);
-
+        prodDtoMapService(dtoServiceMap, optionalProd.get().getId(), optionalProd);
+        //当然, 使用反射会造成性能损失, 这里直接写死用join也是可以的(另见getUser4MeG)
 
         //包含缓存的更新逻辑, 在更新数据库之后更新缓存(正常流程后)
 
@@ -459,11 +465,17 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         ProdGreatVO prodGreatVO;
 
-        try {
+/*        try {
             prodGreatVO = dtoUtils.createAndCombineDTOs(ProdGreatVO.class, prod.getId(), ProdAllDTO.class, ProdFuncAllDTO.class);
         } catch (Exception e) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);
-        }
+        }*/
+        prodGreatVO = prodMapper.selectJoinOne(ProdGreatVO.class, new MPJLambdaWrapper<Prod>()
+                .selectAll(Prod.class)
+                .selectAll(ProdFunc.class)
+                .leftJoin(ProdFunc.class, ProdFunc::getId, Prod::getId)
+                .eq(Prod::getId, prod.getId()));
+
 
         return prodGreatVO;
     }
@@ -517,11 +529,17 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         ProdGreatVO prodGreatVO;
 
-        try {
+/*       try {
             prodGreatVO = dtoUtils.createAndCombineDTOs(ProdGreatVO.class, prod.getId(), ProdAllDTO.class, ProdFuncAllDTO.class);
         } catch (Exception e) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);
-        }
+        }*/
+
+        prodGreatVO = prodMapper.selectJoinOne(ProdGreatVO.class, new MPJLambdaWrapper<Prod>()
+                .selectAll(Prod.class)
+                .selectAll(ProdFunc.class)
+                .leftJoin(ProdFunc.class, ProdFunc::getId, Prod::getId)
+                .eq(Prod::getId, prod.getId()));
 
         return prodGreatVO;
     }
