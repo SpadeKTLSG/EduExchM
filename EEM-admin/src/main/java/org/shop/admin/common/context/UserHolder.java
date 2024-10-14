@@ -1,7 +1,7 @@
-package org.shop.guest.common.context;
+package org.shop.admin.common.context;
 
 
-import org.shop.guest.entity.dto.UserLocalDTO;
+import org.shop.admin.entity.remote.UserLocalDTO;
 
 /**
  * 用户上下文
