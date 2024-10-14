@@ -12,6 +12,7 @@ import org.shop.supply.mapper.RotationMapper;
 import org.shop.supply.service.ProdService;
 import org.shop.supply.service.RotationService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 
@@ -20,9 +21,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RotationServiceImpl extends ServiceImpl<RotationMapper, Rotation> implements RotationService {
 
+    //解决循环依赖
+    private ProdService prodService;
 
-    private final ProdService prodService;
-
+    // 使用Setter注入来解决循环依赖
+    public void setProdService(@Lazy ProdService prodService) {
+        this.prodService = prodService;
+    }
 
     @Override
     public void add2Rotation(RotationAllDTO rotationAllDTO) {

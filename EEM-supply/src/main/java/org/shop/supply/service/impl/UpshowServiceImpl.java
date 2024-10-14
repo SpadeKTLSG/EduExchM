@@ -12,6 +12,7 @@ import org.shop.supply.mapper.UpshowMapper;
 import org.shop.supply.service.ProdService;
 import org.shop.supply.service.UpshowService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 
@@ -20,8 +21,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UpshowServiceImpl extends ServiceImpl<UpshowMapper, Upshow> implements UpshowService {
 
+    private ProdService prodService;
 
-    private final ProdService prodService;
+    // 使用Setter注入来解决循环依赖
+    public void setProdService(@Lazy ProdService prodService) {
+        this.prodService = prodService;
+    }
 
 
     @Override
