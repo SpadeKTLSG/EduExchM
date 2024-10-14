@@ -21,13 +21,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RotationServiceImpl extends ServiceImpl<RotationMapper, Rotation> implements RotationService {
 
-    //解决循环依赖
     private ProdService prodService;
-
-    // 使用Setter注入来解决循环依赖
     public void setProdService(@Lazy ProdService prodService) {
         this.prodService = prodService;
     }
+
 
     @Override
     public void add2Rotation(RotationAllDTO rotationAllDTO) {

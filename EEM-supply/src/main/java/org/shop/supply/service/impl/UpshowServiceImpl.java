@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 public class UpshowServiceImpl extends ServiceImpl<UpshowMapper, Upshow> implements UpshowService {
 
     private ProdService prodService;
-
-    // 使用Setter注入来解决循环依赖
     public void setProdService(@Lazy ProdService prodService) {
         this.prodService = prodService;
     }

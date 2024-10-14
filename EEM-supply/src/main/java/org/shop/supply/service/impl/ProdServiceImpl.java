@@ -56,20 +56,19 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
-    //解决循环依赖
+
     private final ProdFuncService prodFuncService;
     private final ProdCateService prodCateService;
-    private RotationService rotationService;
-    private UpshowService upshowService;
-    private HotsearchService hotsearchService;
-
 
     private final OrderClient orderClient;
     private final ProdMapper prodMapper;
     private final StringRedisTemplate stringRedisTemplate;
 
+    private RotationService rotationService;
+    private UpshowService upshowService;
+    private HotsearchService hotsearchService;
 
-    // 使用Setter注入来解决循环依赖
+    // 使用Setter注入解决循环依赖
     public void setUpshowService(@Lazy UpshowService upshowService) {
         this.upshowService = upshowService;
     }
