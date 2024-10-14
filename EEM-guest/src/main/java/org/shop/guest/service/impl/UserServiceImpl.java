@@ -12,10 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.guest.client.ProdClient;
-import org.shop.guest.common.constant.MessageConstant;
-import org.shop.guest.common.constant.PasswordConstant;
-import org.shop.guest.common.constant.RedisConstant;
-import org.shop.guest.common.constant.SystemConstant;
+import org.shop.guest.common.constant.*;
 import org.shop.guest.common.context.UserHolder;
 import org.shop.guest.common.exception.*;
 import org.shop.guest.common.utils.MailUtil;
@@ -386,7 +383,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         dtoServiceMap.put(createDTOFromUserGreatDTO(userGreatDTO, UserFuncAllDTO.class), userFuncService);
         dtoServiceMap.put(createDTOFromUserGreatDTO(userGreatDTO, UserDetailAllDTO.class), userDetailService);
 
-        dtoMapService(dtoServiceMap, optionalUser.get().getId(), optionalUser);
+
+//        dtoMapService(dtoServiceMap, optionalUser.get().getId(), optionalUser);
     }
 
 
@@ -435,7 +433,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         if (this.getById(userLocalDTO.getId()) == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
-
         // ? MPJ联表展示示例 (自己封装的工具类dtoUtils等都在EduExch里面, 这里使用自己更加通用的方法)
         // 原方法: createAndCombineDTOs, 要求把UserAllDTO, UserDetailAllDTO, UserFuncAllDTO三个通过userLocalDTO.getId找到并查出来, 分别处于不同的三个数据库, 需要联表
         // 之前是采用手动替代MySQL引擎联表, 手动查3次小POJO实现性能提升的. 现在将这一工作委托给MP的升级插件MPJ, 最近也是做的不错了, 性能方面已经没有什么高下之分.
@@ -447,16 +444,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         //MPJ 实现联表查询 (需要修改BaseMapper -> MPJBaseMapper): 联表查出大对象 User, 并使其适应大VO返回
         //tips: 和Mybatis plus一致，MPJLambdaWrapper的泛型必须是主表User的泛型，并且要用主表的UserMapper来调用
+        //你知道我要说什么, 我在实习时候写了3个月这样的玩意了2333
+        //leftJoin主表要放在最后, 前面的表可以""取别名: leftJoin(UserFunc.class, "uf", UserFunc::getId, User::getId)
+
         UserGreatVO userGreatVO;
         MPJLambdaWrapper<User> mpjLambdaWrapper = new MPJLambdaWrapper<User>()
                 .selectAll(User.class)
                 .selectAll(UserFunc.class)
                 .selectAll(UserDetail.class)
-                .leftJoin(User.class, User::getId, UserFunc::getId)
-                .leftJoin(User.class, User::getId, UserDetail::getId);
-
+                .leftJoin(UserFunc.class, UserFunc::getId, User::getId)
+                .leftJoin(UserDetail.class, UserDetail::getId, User::getId)
+                .eq(User::getId, TestsConstant.BUYER_USERID);
         userGreatVO = userMapper.selectJoinOne(UserGreatVO.class, mpjLambdaWrapper);
-
 
         return userGreatVO;
     }
