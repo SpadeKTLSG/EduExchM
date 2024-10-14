@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.util.concurrent.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.trade.client.ProdClient;
+import org.shop.trade.client.UserClient;
 import org.shop.trade.common.constant.MessageConstant;
 import org.shop.trade.common.context.UserHolder;
 import org.shop.trade.common.exception.*;
@@ -54,13 +56,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
     private final OrderDetailService orderDetailService;
 
-//    private final ProdService prodService;
-//    private final ProdFuncService prodFuncService;
-//    private final UserFuncService userFuncService;
-
     private final MQSender mqSender;
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    private final ProdClient prodClient;
+    private final UserClient userClient;
+
 
     /**
      * 漏桶算法 限流
@@ -97,7 +99,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
 
-        Prod prod = prodService.getOne(new LambdaQueryWrapper<Prod>()
+        Prod prod = prodClient.getOne(new LambdaQueryWrapper<Prod>()
                 .eq(Prod::getName, name)
                 .eq(Prod::getUserId, userId)
         );
@@ -105,7 +107,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (prod == null || prod.getStock() <= 0) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
 
-        ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
+        ProdFunc prodFunc = prodClient.getOne_ProdFunc(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );
         if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BadArgsException(MessageConstant.BAD_ARGS);      //审核未通过的商品不可交易
@@ -141,7 +143,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                 .build();
         orderDetailService.save(orderDetail);
 
-        prodService.updateById(prod);
+        prodClient.updateById(prod);
     }
 
 
@@ -172,13 +174,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
 
-        Prod prod = prodService.getOne(new LambdaQueryWrapper<Prod>()
+        Prod prod = prodClient.getOne(new LambdaQueryWrapper<Prod>()
                 .eq(Prod::getName, name)
                 .eq(Prod::getUserId, userId)
         );
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
-        ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
+        ProdFunc prodFunc = prodClient.getOne_ProdFunc(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );
         if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BlockActionException(MessageConstant.BLOCK_ACTION);//审核未通过的商品不可交易
@@ -284,13 +286,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderDetailService.updateById(orderDetail);
 
         //修改三方字段: 买家和卖家的对应交易次数+1
-        UserFunc buyerFunc = userFuncService.getById(order1.getBuyerId());
-        UserFunc sellerFunc = userFuncService.getById(order1.getSellerId());
+        UserFunc buyerFunc = userClient.getById_UserFunc(order1.getBuyerId());
+        UserFunc sellerFunc = userClient.getById_UserFunc(order1.getSellerId());
         buyerFunc.setGains(buyerFunc.getGains() + 1);
         sellerFunc.setSolds(buyerFunc.getSolds() + 1);
 
-        userFuncService.updateById(buyerFunc);
-        userFuncService.updateById(sellerFunc);
+        userClient.updateById_UserFunc(buyerFunc);
+        userClient.updateById_UserFunc(sellerFunc);
     }
 
     //! QUERY

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "trade")
 public interface OrderClient {
 
+    //Order
+
     @GetMapping("/admin/order/remote/getOne")
     Order getOne(@RequestBody LambdaQueryWrapper<Order> ne);
 

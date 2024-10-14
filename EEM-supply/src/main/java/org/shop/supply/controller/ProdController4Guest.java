@@ -1,5 +1,6 @@
 package org.shop.supply.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.shop.supply.common.constant.SystemConstant;
 import org.shop.supply.common.context.UserHolder;
 import org.shop.supply.entity.Prod;
+import org.shop.supply.entity.ProdFunc;
 import org.shop.supply.entity.dto.ProdGreatDTO;
 import org.shop.supply.entity.dto.ProdLocateDTO;
 import org.shop.supply.entity.res.Result;
 import org.shop.supply.service.ProdCateService;
+import org.shop.supply.service.ProdFuncService;
 import org.shop.supply.service.ProdService;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,17 +34,38 @@ public class ProdController4Guest {
 
     private final ProdService prodService;
     private final ProdCateService prodCateService;
+    private final ProdFuncService prodFuncService;
 
 
     //! Client
-    @GetMapping("/remote/getById/{id}")
+    @GetMapping("/remote/Prod/getById/{id}")
     public Prod getById(@PathVariable Long id) {
         return prodService.getById(id);
     }
 
-    @PostMapping("/remote/updateById")
+    @PostMapping("/remote/Prod/updateById")
     public void updateById(@RequestBody Prod prod) {
         prodService.updateById(prod);
+    }
+
+    @PostMapping("/remote/Prod/getOne")
+    public Prod getOne(@RequestBody LambdaQueryWrapper<Prod> eq) {
+        return prodService.getOne(eq);
+    }
+
+    @GetMapping("/remote/ProdFunc/getById/{id}")
+    public ProdFunc getById_ProdFunc(@PathVariable Long id) {
+        return prodFuncService.getById(id);
+    }
+
+    @PostMapping("/remote/ProdFunc/updateById")
+    public void updateById_ProdFunc(@RequestBody ProdFunc prodFunc) {
+        prodFuncService.updateById(prodFunc);
+    }
+
+    @PostMapping("/remote/ProdFunc/getOne")
+    public ProdFunc getOned_ProdFunc(@RequestBody LambdaQueryWrapper<ProdFunc> eq) {
+        return prodFuncService.getOne(eq);
     }
 
     //! Func

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.trade.client.UserClient;
 import org.shop.trade.common.constant.MessageConstant;
 import org.shop.trade.common.constant.ServiceConstant;
 import org.shop.trade.common.constant.TestsConstant;
@@ -38,7 +39,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     private final OrderService orderService;
 
 
-    //private final UserFuncService userFuncService;
+    private final UserClient userClient;
 
 
     @Override
@@ -115,12 +116,12 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
 
         //用户增加嘉奖值
-        UserFunc userFunc = userFuncService.getById(UserHolder.getUser().getId());
+        UserFunc userFunc = userClient.getById_UserFunc(UserHolder.getUser().getId());
 
         int value2Add = voucher.getType() == 0 ? voucher.getValue() : voucher.getValue() * 2;
 
         userFunc.setCredit(userFunc.getCredit() + value2Add);
-        userFuncService.updateById(userFunc);
+        userClient.updateById_UserFunc(userFunc);
 
         //回传给前端效果字段 : voucher.getFunc(), 0 - 1 - 2 指明其功能类型, 用于后续前端打开窗口,
         // 让用户指定商品对象进行Update操作-> ProdFunc字段修改, 请求见ProdController
@@ -152,12 +153,12 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
         this.updateById(voucher);
 
         //用户增加嘉奖值
-        UserFunc userFunc = userFuncService.getById(UserHolder.getUser().getId());
+        UserFunc userFunc = userClient.getById_UserFunc(UserHolder.getUser().getId());
 
         int value2Add = voucher.getType() == 0 ? voucher.getValue() : voucher.getValue() * 2;
 
         userFunc.setCredit(userFunc.getCredit() + value2Add);
-        userFuncService.updateById(userFunc);
+        userClient.updateById_UserFunc(userFunc);
 
         //对目前开启的交易判定是否存在, 存在则视为一次准入成功, 对用户进行增加嘉奖值操作(否则没有奖励)
 
@@ -166,9 +167,9 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         if (order == null) return false;
 
-        UserFunc userFunc2 = userFuncService.getById(TestsConstant.BUYER_USERID);
+        UserFunc userFunc2 = userClient.getById_UserFunc(TestsConstant.BUYER_USERID);
         userFunc2.setGodhit(userFunc2.getGodhit() + 1);
-        userFuncService.updateById(userFunc2);
+        userClient.updateById_UserFunc(userFunc2);
 
         return true;
     }

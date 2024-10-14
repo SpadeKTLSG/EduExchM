@@ -8,12 +8,15 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.guest.common.context.UserHolder;
+import org.shop.guest.entity.User;
+import org.shop.guest.entity.UserFunc;
 import org.shop.guest.entity.dto.UserGreatDTO;
 import org.shop.guest.entity.dto.UserLocalDTO;
 import org.shop.guest.entity.dto.UserLoginDTO;
 import org.shop.guest.entity.remote.ProdLocateDTO;
 import org.shop.guest.entity.res.Result;
 import org.shop.guest.service.UserFollowService;
+import org.shop.guest.service.UserFuncService;
 import org.shop.guest.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +33,33 @@ public class UserController4Guest {
 
 
     private final UserService userService;
+    private final UserFuncService userFuncService;
     private final UserFollowService userFollowService;
+
+
+    //! Client
+
+    @GetMapping("/remote/User/getById/{id}")
+    User getById(@PathVariable Long id) {
+        return userService.getById(id);
+    }
+
+    @PostMapping("/remote/User/updateById")
+    void updateById(@RequestBody User user) {
+        userService.updateById(user);
+    }
+
+
+    @GetMapping("/remote/UserFunc/getById/{id}")
+    UserFunc getById_UserFunc(@PathVariable Long id) {
+        return userFuncService.getById(id);
+    }
+
+
+    @PostMapping("/remote/UserFunc/updateById")
+    void updateById_UserFunc(@RequestBody UserFunc userFunc) {
+        userFuncService.updateById(userFunc);
+    }
 
 
     //! Func
