@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +57,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final ProdClient prodClient;
 
+
+    private final UserMapper userMapper;
 
     //! Func
 
@@ -147,10 +150,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 随机生成token，作为登录令牌
         String token = UUID.randomUUID().toString(true);
         UserLocalDTO userDTO = BeanUtil.copyProperties(user, UserLocalDTO.class);
-        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(),
-                CopyOptions.create()
-                        .setIgnoreNullValue(true)
-                        .setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
+        Map<String, Object> userMap = BeanUtil.beanToMap(userDTO, new HashMap<>(), CopyOptions.create().setIgnoreNullValue(true).setFieldValueEditor((fieldName, fieldValue) -> fieldValue.toString()));
 
         // 存储
         String tokenKey = RedisConstant.LOGIN_USER_KEY_GUEST + token;
@@ -197,11 +197,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         int dayOfMonth = now.getDayOfMonth();
 
         // 获取本月截止今天为止的所有的签到记录，返回的是一个十进制的数字 BITFIELD sign:5:202203 GET u14 0
-        List<Long> result = stringRedisTemplate.opsForValue().bitField(
-                key,
-                BitFieldSubCommands.create()
-                        .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth)).valueAt(0)
-        );
+        List<Long> result = stringRedisTemplate.opsForValue().bitField(key, BitFieldSubCommands.create().get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth)).valueAt(0));
 
         if (result == null || result.isEmpty()) { // 没有任何签到结果
             return 0;
@@ -230,9 +226,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         Long userId = UserHolder.getUser().getId();
 
-        Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery()
-                .eq(Prod::getUserId, prodLocateDTO.getUserId())
-                .eq(Prod::getName, prodLocateDTO.getName()));
+        Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getUserId, prodLocateDTO.getUserId()).eq(Prod::getName, prodLocateDTO.getName()));
 
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
@@ -310,9 +304,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String[] split = prodLocateDTO.split(":"); //分割
             Long prodUserId = Long.parseLong(split[0]);
             String prodName = split[1];
-            Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery()
-                    .eq(Prod::getUserId, prodUserId)
-                    .eq(Prod::getName, prodName));
+            Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getUserId, prodUserId).eq(Prod::getName, prodName));
             prods.add(prod);
         }
 
@@ -347,23 +339,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
         //创建账户 + 账户具体信息 + 账户功能信息, 填充必须字段
-        User user = User.builder()
-                .account(userLoginDTO.getAccount())
-                .password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes())) //默认密码
-                .phone(phone)
-                .build();
+        User user = User.builder().account(userLoginDTO.getAccount()).password(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes())) //默认密码
+                .phone(phone).build();
         save(user);
 
-        UserDetail userDetail = UserDetail.builder()
-                .school("蚌埠坦克学院")
-                .createTime(LocalDateTime.now())
-                .introduce("这个人很懒，什么都没留下")
-                .build();
+        UserDetail userDetail = UserDetail.builder().school("蚌埠坦克学院").createTime(LocalDateTime.now()).introduce("这个人很懒，什么都没留下").build();
         userDetailService.save(userDetail);
 
-        UserFunc userFunc = UserFunc.builder()
-                .credit(114L)
-                .build();
+        UserFunc userFunc = UserFunc.builder().credit(114L).build();
         userFuncService.save(userFunc);
     }
 
@@ -413,10 +396,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccount, userLoginDTO.getAccount())) == null)
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
-        User user = User.builder()
-                .account(userLoginDTO.getAccount())
-                .password(DigestUtils.md5DigestAsHex(userLoginDTO.getPassword().getBytes()))
-                .build();
+        User user = User.builder().account(userLoginDTO.getAccount()).password(DigestUtils.md5DigestAsHex(userLoginDTO.getPassword().getBytes())).build();
 
         this.update(user, Wrappers.<User>lambdaUpdate().eq(User::getAccount, userLoginDTO.getAccount()));
     }
@@ -456,15 +436,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (this.getById(userLocalDTO.getId()) == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
 
-        UserGreatVO userGreatVO;
-
-        // 联表
-
-        try {
+        // ? MPJ联表展示示例 (自己封装的工具类dtoUtils等都在EduExch里面, 这里使用自己更加通用的方法)
+        // 原方法: createAndCombineDTOs, 要求把UserAllDTO, UserDetailAllDTO, UserFuncAllDTO三个通过userLocalDTO.getId找到并查出来, 分别处于不同的三个数据库, 需要联表
+        // 之前是采用手动替代MySQL引擎联表, 手动查3次小POJO实现性能提升的. 现在将这一工作委托给MP的升级插件MPJ, 最近也是做的不错了, 性能方面已经没有什么高下之分.
+        /* try {
             userGreatVO = dtoUtils.createAndCombineDTOs(UserGreatVO.class, userLocalDTO.getId(), UserAllDTO.class, UserDetailAllDTO.class, UserFuncAllDTO.class);
         } catch (Exception e) {
             throw new BaseException(MessageConstant.UNKNOWN_ERROR);
-        }
+        }*/
+
+        //MPJ 实现联表查询 (需要修改BaseMapper -> MPJBaseMapper): 联表查出大对象 User, 并使其适应大VO返回
+        //tips: 和Mybatis plus一致，MPJLambdaWrapper的泛型必须是主表User的泛型，并且要用主表的UserMapper来调用
+        UserGreatVO userGreatVO;
+        MPJLambdaWrapper<User> mpjLambdaWrapper = new MPJLambdaWrapper<User>()
+                .selectAll(User.class)
+                .selectAll(UserFunc.class)
+                .selectAll(UserDetail.class)
+                .leftJoin(User.class, User::getId, UserFunc::getId)
+                .leftJoin(User.class, User::getId, UserDetail::getId);
+
+        userGreatVO = userMapper.selectJoinOne(UserGreatVO.class, mpjLambdaWrapper);
+
 
         return userGreatVO;
     }
@@ -474,9 +466,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Page<UserVO> searchUserB(String account, Integer current) {
 
         //分页展示模糊匹配的所有可能结果
-        Page<User> page = this.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE), Wrappers.<User>lambdaQuery()
-                .like(User::getAccount, account)
-        );
+        Page<User> page = this.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE), Wrappers.<User>lambdaQuery().like(User::getAccount, account));
 
         return (Page<UserVO>) page.convert(user -> {
             UserVO userVO = new UserVO();
