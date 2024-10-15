@@ -1,6 +1,7 @@
 package org.shop.trade.flow.task;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.trade.entity.Voucher;
 import org.shop.trade.service.VoucherService;
@@ -15,10 +16,11 @@ import java.util.List;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class VoucherTask {
 
 
-    private VoucherService voucherService;
+    private final VoucherService voucherService;
 
 
     /**
