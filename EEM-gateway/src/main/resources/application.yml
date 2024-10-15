@@ -20,16 +20,51 @@ spring:
 
     gateway:
       routes:
-        - id: admin-service # 路由标示，必须唯一
-          uri: lb://userservice # 路由的目标地址
-          predicates: # 路由断言，判断请求是否符合规则
-            - Path=/user/** # 路径断言，判断路径是否是以/user开头，如果是则符合
-        - id: order-service
-          uri: lb://orderservice
+        # 规则. 注意微服务是根据单体拆的, 路径存在不规范
+        #        - id: admin-service # 必须唯一路由标识
+        #          uri: lb://adminservice # 路由的目标地址
+        #          predicates: # 路由断言，判断请求是否符合规则
+        #            - Path=/admin/**
+        #          filters:
+        #            - AddRequestHeader=Authorization, "Bearer {token}"
+
+        # admin-service
+        - id: admin-service
+          uri: lb://admin
           predicates:
-            - Path=/order/**
-          filters:
-            - AddRequestHeader=key, value
+            - Path=/admin/panel/**
+
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/admin/employee/**
+
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/customer/admin/**
+
+
+        # guest-service
+        - id: guest-service
+          uri: lb://guest
+          predicates:
+            - Path=/guest/**
+
+
+        # supply-service
+        - id: supply-service
+          uri: lb://supplyservice
+          predicates:
+            - Path=/supply/**
+
+
+        # trade-service
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/trade/**
+
 
       globalcors: # 全局的跨域处理
         add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
