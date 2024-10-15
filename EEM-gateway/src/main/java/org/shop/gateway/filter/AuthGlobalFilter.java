@@ -109,9 +109,11 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         //传递在请求头的自定义用户信息, 之后在各个服务中可以通过请求头直接获取用户信息存TL (由于单体设计缺陷, 还需要存储用户类型)
         Long userId = Long.parseLong((String) userMap.get("id"));
 
-        //由于网关不能写业务, 如果要保证account的强一致性这里就需要每次去查用户的account, 同时存到缓存里, 传递给下游服务避免重复查找, 直接从缓存拿(账户登录时间内)
-        //但是account的强一致性并不重要, 所以这里只是简单的传递用户信息
+        //由于网关不能写业务, 如果要保证account的强一致性这里就可以每次去查用户的account, 同时存到缓存里, 传递给下游服务避免重复查找, 直接从缓存拿(账户登录时间内)
+        //但是account的强一致性并不重要, 所以这里只是简单的传递临时用户信息, 需要时候直接用id查即可.
         String saved_info = isAdmin ? JSONUtil.toJsonStr(new EmployeeLocalDTO(userId, SystemConstant.TEMP_ACCOUNT_NAME)) : JSONUtil.toJsonStr(new UserLocalDTO(userId, SystemConstant.TEMP_ACCOUNT_NAME));
+
+        //打包带走
         ServerWebExchange ex = exchange.mutate().request(a -> a.header("saved_info", saved_info).header("user_type", isAdmin ? "admin" : "guest"))
                 .build();
         return chain.filter(ex);

@@ -110,7 +110,7 @@ public class UserController4Guest {
     @GetMapping("/me")
     @Operation(summary = "获取当前用户")
     public Result whoAmI() {
-        return Result.success(UserHolder.getUser().getAccount());
+        return Result.success(userService.getUser8EzIdA(UserHolder.getUser().getId()).getAccount());
     }
     //http://localhost:10083/guest/user/me
 
