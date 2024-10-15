@@ -50,17 +50,19 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         // 获取请求头中自定义token + (Postman相关处理)
         String token = null;
         List<String> headers = request.getHeaders().get("authorization");
-
-        if (!isEmpty(headers)) {
-            token = headers.get(0);
+        if (isEmpty(headers)) {
+            throw new NotLoginException();
         }
-        try {
-            if (StrUtil.isBlank(token)) throw new NotLoginException();
 
+        token = headers.get(0);
+        if (StrUtil.isBlank(token)) throw new NotLoginException();
+
+        try {
             if (token.startsWith("Bearer ")) { //去除Postman产生的Bearer前缀
                 token = token.substring(7);
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             ServerHttpResponse response = exchange.getResponse();
             response.setRawStatusCode(401);
             return response.setComplete();

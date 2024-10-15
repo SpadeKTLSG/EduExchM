@@ -28,7 +28,8 @@ spring:
         #          filters:
         #            - AddRequestHeader=Authorization, "Bearer {token}"
 
-        # admin-service
+        # 测试请把请求统一发送到这个网关服务地址, 进行路由转发
+
         - id: admin-service
           uri: lb://admin
           predicates:
