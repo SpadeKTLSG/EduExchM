@@ -1,6 +1,5 @@
 package org.shop.supply.common.interceptor;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,11 +54,11 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
         try {
             if (isAdmin) {
                 log.debug("操作EEM-admin管理员: " + saved_info);
-                EmployeeLocalDTO user = BeanUtil.toBean(saved_info, EmployeeLocalDTO.class);
+                EmployeeLocalDTO user = JSONUtil.toBean(saved_info, EmployeeLocalDTO.class);
                 return handleAdmin(token, user);
             } else {
                 log.debug("操作EEM-admin用户: " + saved_info);
-                UserLocalDTO user = BeanUtil.toBean(saved_info, UserLocalDTO.class);
+                UserLocalDTO user = JSONUtil.toBean(saved_info, UserLocalDTO.class);
                 return handleUser(token, user);
             }
         } catch (Exception e) {
