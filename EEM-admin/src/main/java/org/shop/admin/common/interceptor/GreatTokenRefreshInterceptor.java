@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.shop.admin.common.constant.MessageConstant;
 import org.shop.admin.common.constant.RedisConstant;
 import org.shop.admin.common.context.EmployeeHolder;
+import org.shop.admin.common.context.UserHolder;
 import org.shop.admin.common.exception.NotLoginException;
 import org.shop.admin.entity.dto.EmployeeLocalDTO;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -18,15 +19,17 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 
+@Slf4j
 public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
 
-    private StringRedisTemplate stringRedisTemplate;
+
+    private final StringRedisTemplate stringRedisTemplate;
 
     public GreatTokenRefreshInterceptor(StringRedisTemplate stringRedisTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
     }
+
 
     @Override
     @SneakyThrows
@@ -42,7 +45,9 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
         }
 
 
-        String key = RedisConstant.LOGIN_USER_KEY_ADMIN + token;     //基于TOKEN获取redis中的管理员
+        String key_admin = RedisConstant.LOGIN_USER_KEY_ADMIN + token;     //基于TOKEN获取redis中的管理员
+        String key_user = RedisConstant.LOGIN_USER_KEY_GUEST + token;     //基于TOKEN获取redis中的管理员
+
         Map<Object, Object> employeeMap = stringRedisTemplate.opsForHash().entries(key);
         log.info("操作管理员信息: " + employeeMap);
 
@@ -57,8 +62,12 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    /**
+     * 请求结束后移除管理员/用户信息
+     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        EmployeeHolder.removeEmployee(); // 移除管理员
+        EmployeeHolder.removeEmployee();
+        UserHolder.removeUser();
     }
 }
