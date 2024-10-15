@@ -11,7 +11,6 @@ import org.shop.guest.common.context.UserHolder;
 import org.shop.guest.entity.User;
 import org.shop.guest.entity.UserFunc;
 import org.shop.guest.entity.dto.UserGreatDTO;
-import org.shop.guest.entity.dto.UserLocalDTO;
 import org.shop.guest.entity.dto.UserLoginDTO;
 import org.shop.guest.entity.remote.ProdLocateDTO;
 import org.shop.guest.entity.res.Result;
@@ -111,8 +110,7 @@ public class UserController4Guest {
     @GetMapping("/me")
     @Operation(summary = "获取当前用户")
     public Result whoAmI() {
-        UserLocalDTO userLocalDTO = UserHolder.getUser();
-        return Result.success(userLocalDTO);
+        return Result.success(UserHolder.getUser().getAccount());
     }
     //http://localhost:10083/guest/user/me
 
