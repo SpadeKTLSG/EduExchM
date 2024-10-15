@@ -72,7 +72,7 @@ spring:
         - id: supply-service
           uri: lb://supplyservice
           predicates:
-            - Path=/admin/prod**
+            - Path=/admin/prod/**
 
         - id: supply-service
           uri: lb://supplyservice
