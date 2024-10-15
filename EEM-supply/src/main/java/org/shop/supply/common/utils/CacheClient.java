@@ -130,7 +130,7 @@ public class CacheClient {
         }
 
         String lockKey = RedisConstant.LOCK_EG_KEY + id;
-        R r = null;
+        R r;
         try {
 
             boolean flag = tryLock(lockKey);

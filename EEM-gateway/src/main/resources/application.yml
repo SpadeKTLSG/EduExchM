@@ -32,7 +32,7 @@ spring:
         - id: admin-service
           uri: lb://admin
           predicates:
-            - Path=/admin/panel/**
+            - Path=/admin/panel/supply/**
 
         - id: admin-service
           uri: lb://admin
@@ -44,26 +44,61 @@ spring:
           predicates:
             - Path=/customer/admin/**
 
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/customer/guest/**
+
 
         # guest-service
         - id: guest-service
           uri: lb://guest
           predicates:
-            - Path=/guest/**
+            - Path=/admin/user/**
+
+        - id: guest-service
+          uri: lb://guest
+          predicates:
+            - Path=/guest/user/**
 
 
         # supply-service
         - id: supply-service
           uri: lb://supplyservice
           predicates:
-            - Path=/supply/**
+            - Path=/admin/panel/supply/**
+
+        - id: supply-service
+          uri: lb://supplyservice
+          predicates:
+            - Path=/admin/prod**
+
+        - id: supply-service
+          uri: lb://supplyservice
+          predicates:
+            - Path=/guest/prod/**
 
 
         # trade-service
         - id: trade-service
           uri: lb://tradeservice
           predicates:
-            - Path=/trade/**
+            - Path=/admin/order/**
+
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/guest/order/**
+
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/admin/voucher/**
+
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/guest/voucher/**
 
 
       globalcors: # 全局的跨域处理
@@ -143,8 +178,9 @@ feign:
       default:
         loggerLevel: FULL #  日志级别
 
-# 网关白名单路径
 
+
+# 网关白名单路径
 auth:
   exclude-paths:
     - /admin.html

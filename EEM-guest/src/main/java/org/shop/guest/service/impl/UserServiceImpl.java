@@ -44,6 +44,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.shop.guest.common.utils.NewBeanUtil.userDtoMapService;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -386,8 +388,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         dtoServiceMap.put(createDTOFromUserGreatDTO(userGreatDTO, UserFuncAllDTO.class), userFuncService);
         dtoServiceMap.put(createDTOFromUserGreatDTO(userGreatDTO, UserDetailAllDTO.class), userDetailService);
 
-
-//        dtoMapService(dtoServiceMap, optionalUser.get().getId(), optionalUser);
+        userDtoMapService(dtoServiceMap, optionalUser.get().getId(), optionalUser);
     }
 
 
