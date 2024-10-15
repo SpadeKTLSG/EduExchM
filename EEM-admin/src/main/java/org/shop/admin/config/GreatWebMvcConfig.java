@@ -6,8 +6,8 @@ import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.shop.admin.common.interceptor.AdminRefreshTokenInterceptor;
 import org.shop.admin.common.interceptor.GreatLoginInterceptor;
+import org.shop.admin.common.interceptor.GreatTokenRefreshInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
@@ -38,28 +38,26 @@ public class GreatWebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        log.debug("自定义管理员端拦截器启动");
+        log.debug("自定义拦截器启动!");
+
+        String[] ex = {"/admin.html",
+                "/admin/employee/login",
+                "/admin/employee/register",
+                "/admin/employee/code",
+                "/guest.html",
+                "/guest/user/login",
+                "/guest/user/register",
+                "/guest/user/code",
+                "/swagger-ui/**", "/swagger-ui.html", "/doc.html", "/webjars/**", "/swagger-resources/**", "/swagger-ui/**", "/v3/**", "/error"};
 
         //登录拦截器
         registry.addInterceptor(new GreatLoginInterceptor())
-
-                .excludePathPatterns("/guest/**", // 用户端
-                        "/admin.html", "/swagger-ui/**", "/swagger-ui.html", "/doc.html", "/webjars/**", "/swagger-resources/**", "/swagger-ui/**", "/v3/**", "/error", // swagger 3.0 (坑死了)
-                        "/admin/employee/login",
-                        "/admin/employee/register",
-                        "/admin/employee/code"
-                ).order(1);
+                .excludePathPatterns(ex).order(1);
 
         // token刷新拦截器
-        registry.addInterceptor(new AdminRefreshTokenInterceptor(stringRedisTemplate))
-
+        registry.addInterceptor(new GreatTokenRefreshInterceptor(stringRedisTemplate))
                 .addPathPatterns("/**")
-                .excludePathPatterns("/guest/**",  // 用户端
-                        "/admin.html", "/swagger-ui/**", "/swagger-ui.html", "/doc.html", "/webjars/**", "/swagger-resources/**", "/swagger-ui/**", "/v3/**", "/error", // swagger 3.0 (坑死了)
-                        "/admin/employee/login",
-                        "/admin/employee/register",
-                        "/admin/employee/code"
-                ).order(0);
+                .excludePathPatterns(ex).order(0);
     }
 
 

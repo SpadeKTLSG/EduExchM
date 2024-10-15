@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.admin.common.constant.MessageConstant;
@@ -20,11 +19,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@RequiredArgsConstructor
+
 public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
 
-    private final StringRedisTemplate stringRedisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
+    public GreatTokenRefreshInterceptor(StringRedisTemplate stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
 
     @Override
     @SneakyThrows
@@ -46,6 +48,7 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
 
         if (employeeMap.isEmpty()) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
+        // 转为UserDTO, 保存用户信息到 ThreadLocal
         EmployeeLocalDTO employeeLocalDTO = BeanUtil.fillBeanWithMap(employeeMap, new EmployeeLocalDTO(), false);
         EmployeeHolder.saveEmployee(employeeLocalDTO);
 
