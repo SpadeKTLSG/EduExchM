@@ -37,12 +37,6 @@
             <version>7.17.6</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.17.6</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

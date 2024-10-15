@@ -411,7 +411,7 @@
         <repository>
             <id>central</id>
             <name>maven-central</name>
-            <url>http://central.maven.org/maven2/</url>
+            <url>https://central.maven.org/maven2/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

@@ -1,8 +1,9 @@
 package org.shop.guest.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import com.github.yulichang.base.MPJBaseMapper;
 import org.shop.guest.entity.UserFunc;
 
 
-public interface UserFuncMapper extends BaseMapper<UserFunc> {
+public interface UserFuncMapper extends MPJBaseMapper<UserFunc> {
 }

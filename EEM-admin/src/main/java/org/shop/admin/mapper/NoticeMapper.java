@@ -1,9 +1,8 @@
 package org.shop.admin.mapper;
 
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 import org.shop.admin.entity.Notice;
 
-
-public interface NoticeMapper extends BaseMapper<Notice> {
+public interface NoticeMapper extends MPJBaseMapper<Notice> {
 }

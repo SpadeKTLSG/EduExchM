@@ -1,8 +1,8 @@
 package org.shop.trade.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 import org.shop.trade.entity.OrderDetail;
 
 
-public interface OrderDetailMapper extends BaseMapper<OrderDetail> {
+public interface OrderDetailMapper extends MPJBaseMapper<OrderDetail> {
 }

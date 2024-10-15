@@ -1,9 +1,9 @@
 package org.shop.admin.mapper;
 
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 import org.shop.admin.entity.Employee;
 
 
-public interface EmployeeMapper extends BaseMapper<Employee> {
+public interface EmployeeMapper extends MPJBaseMapper<Employee> {
 }

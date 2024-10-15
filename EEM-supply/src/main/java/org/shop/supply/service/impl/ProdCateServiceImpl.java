@@ -23,8 +23,8 @@ public class ProdCateServiceImpl extends ServiceImpl<ProdCateMapper, ProdCate> i
     @Override
     public void postCateA(ProdCateAllDTO prodCateAllDTO) {
 
-        if (this.getOne(new LambdaQueryWrapper<ProdCate>()
-                .eq(ProdCate::getName, prodCateAllDTO.getName()), false) != null) throw new SthHasCreatedException(MessageConstant.OBJECT_HAS_ALIVE);
+        if (this.getOne(new LambdaQueryWrapper<ProdCate>().eq(ProdCate::getName, prodCateAllDTO.getName()), false) != null)
+            throw new SthHasCreatedException(MessageConstant.OBJECT_HAS_ALIVE);
 
         this.save(ProdCate.builder()
                 .name(prodCateAllDTO.getName())
@@ -43,8 +43,8 @@ public class ProdCateServiceImpl extends ServiceImpl<ProdCateMapper, ProdCate> i
 
     @Override
     public void putCateA(ProdCateAllDTO prodCateAllDTO) {
-        ProdCate prodCate = this.getOne(new LambdaQueryWrapper<ProdCate>()
-                .eq(ProdCate::getName, prodCateAllDTO.getName()), false);
+        ProdCate prodCate = this.getOne(new LambdaQueryWrapper<ProdCate>().eq(ProdCate::getName, prodCateAllDTO.getName()), false);
+
         if (prodCate == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         BeanUtils.copyProperties(prodCateAllDTO, prodCate);
