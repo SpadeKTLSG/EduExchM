@@ -1,5 +1,5 @@
 server:
-  port: 10081 # 服务端口
+  port: 10080 # 服务端口
 
 
 spring:
@@ -105,7 +105,7 @@ spring:
         add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
         corsConfigurations:
           "[/**]":
-            allowedOrigins: "*" # 允许所有网站的跨域请求
+            allowedOrigins: "http://localhost" # 允许跨域请求
             allowedMethods: "*" # 允许所有的跨域ajax的请求方式
             allowedHeaders: "*" # 允许在请求中携带的头信息
             allowCredentials: true # 是否允许携带cookie

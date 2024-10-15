@@ -40,7 +40,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //网关的过滤不做Redis刷新token操作, 只做token的校验 + TL的传递
-        boolean isAdmin = false; //是否是管理员对象
+        boolean isAdmin; //是否是管理员对象
 
         ServerHttpRequest request = exchange.getRequest();
         if (isExclude(request.getPath().toString())) { // 判断是否是白名单路径
@@ -82,12 +82,15 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             isAdmin = true;
             userMap = userMap_admin;
             log.info("操作管理员信息: " + userMap);
-        } else if (!userMap_user.isEmpty() && userMap_admin.isEmpty()) { //登陆者是用户
-            userMap = userMap_user;
-            log.info("操作用户信息: " + userMap);
         } else {
-            log.error("基于TOKEN: {} 获取redis中的用户: {} 失败", token, JSONUtil.toJsonStr(userMap_user));
-            throw new NetWorkException("网络异常, 请重新登陆");
+            isAdmin = false;
+            if (!userMap_user.isEmpty() && userMap_admin.isEmpty()) { //登陆者是用户
+                userMap = userMap_user;
+                log.info("操作用户信息: " + userMap);
+            } else {
+                log.error("基于TOKEN: {} 获取redis中的用户: {} 失败", token, JSONUtil.toJsonStr(userMap_user));
+                throw new NetWorkException("网络异常, 请重新登陆");
+            }
         }
 
         //基于身份权限识别鉴权
@@ -99,11 +102,11 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             log.debug("正在访问一个通用其他请求路径: " + path);
         }
 
-        //传递在请求头的自定义用户信息, 之后在各个服务中可以通过请求头直接获取用户信息存TL
-        Long userId = (Long) userMap.get("id");
+        //传递在请求头的自定义用户信息, 之后在各个服务中可以通过请求头直接获取用户信息存TL (由于单体设计缺陷, 还需要存储用户类型)
+        Long userId = Long.parseLong((String) userMap.get("id"));
         String saved_info = isAdmin ? JSONUtil.toJsonStr(new EmployeeLocalDTO(userId, null)) : JSONUtil.toJsonStr(new UserLocalDTO(userId, null));
-        ServerWebExchange ex = exchange.mutate().request(a -> a.header("saved_info", saved_info)).build();
-
+        ServerWebExchange ex = exchange.mutate().request(a -> a.header("saved_info", saved_info).header("user_type", isAdmin ? "admin" : "guest"))
+                .build();
         return chain.filter(ex);
     }
 
