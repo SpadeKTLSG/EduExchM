@@ -29,6 +29,7 @@ import org.shop.guest.entity.remote.ProdLocateDTO;
 import org.shop.guest.entity.vo.UserGreatVO;
 import org.shop.guest.entity.vo.UserVO;
 import org.shop.guest.mapper.UserMapper;
+import org.shop.guest.mapper.repo.GuestRepo;
 import org.shop.guest.service.UserDetailService;
 import org.shop.guest.service.UserFuncService;
 import org.shop.guest.service.UserService;
@@ -61,6 +62,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
     private final UserMapper userMapper;
+    private final GuestRepo guestRepo;
+
 
     //! Func
 
@@ -113,13 +116,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
 
-        String code = MailUtil.achieveCode();//生成验证码: 自定义工具类生成验证码
+        String code = MailUtil.achieveCode(); //自定义工具类生成验证码
 
         stringRedisTemplate.opsForValue().set(RedisConstant.LOGIN_CODE_KEY_GUEST + phone, code, RedisConstant.LOGIN_CODE_TTL_GUEST, TimeUnit.MINUTES);
         // 更新发送时间和次数
         stringRedisTemplate.opsForZSet().add(RedisConstant.SENDCODE_SENDTIME_KEY + phone, System.currentTimeMillis() + "", System.currentTimeMillis());
 
-        return code; //调试环境: 返回验证码; 未来使用邮箱工具类发送验证码
+        return code; //调试环境: 返回验证码; 可选择使用邮箱工具类发送验证码
     }
 
 
@@ -141,7 +144,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (cacheCode == null || !cacheCode.equals(code)) throw new InvalidInputException(MessageConstant.CODE_INVALID);
 
         //根据用户名查询用户
-        User user = query().eq("account", userLoginDTO.getAccount()).one();
+        User user = guestRepo.findByAccount(userLoginDTO.getAccount());
         if (user == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         //判断是否被锁定了
@@ -165,7 +168,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void logoutG() {
-
         Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_GUEST + "*");        //删除掉之前本地的所有登陆令牌
 
         if (keys != null) {
@@ -336,7 +338,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
 
         //校验账户是否已存在
-        User userExist = query().eq("account", userLoginDTO.getAccount()).one();
+        User userExist = guestRepo.findByAccount(userLoginDTO.getAccount());
         if (userExist != null) throw new AccountAlivedException(MessageConstant.ACCOUNT_ALIVED);
 
 
@@ -399,8 +401,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         User user = User.builder().account(userLoginDTO.getAccount()).password(DigestUtils.md5DigestAsHex(userLoginDTO.getPassword().getBytes())).build();
-
-        this.update(user, Wrappers.<User>lambdaUpdate().eq(User::getAccount, userLoginDTO.getAccount()));
+        guestRepo.updateByAccount(user.getAccount());
     }
 
 
@@ -420,7 +421,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UserVO getUser8EzA(String account) {
-        User user = this.getOne(Wrappers.<User>lambdaQuery().eq(User::getAccount, account));
+        User user = guestRepo.findByAccount(account);
         if (user == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
 
         UserVO userVO = new UserVO();
