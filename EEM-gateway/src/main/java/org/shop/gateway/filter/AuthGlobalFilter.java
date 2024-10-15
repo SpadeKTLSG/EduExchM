@@ -40,7 +40,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //网关的过滤不做Redis刷新token操作, 只做token的校验 + TL的传递
-        boolean isAdmin = false; //是否是管理员类型请求
+        boolean isAdmin = false; //是否是管理员对象
 
         ServerHttpRequest request = exchange.getRequest();
         if (isExclude(request.getPath().toString())) { // 判断是否是白名单路径
