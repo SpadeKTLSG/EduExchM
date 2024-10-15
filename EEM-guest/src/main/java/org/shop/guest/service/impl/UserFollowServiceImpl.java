@@ -43,19 +43,15 @@ public class UserFollowServiceImpl extends ServiceImpl<UserFollowMapper, UserFol
         String key = "follows:" + userId;
 
 
-        UserFunc fan_userFunc = userFuncService.getOne(new LambdaQueryWrapper<>(UserFunc.class)
-                .eq(UserFunc::getId, userId)
-        );
-
-        UserFunc follower_userFunc = userFuncService.getOne(new LambdaQueryWrapper<>(UserFunc.class)
-                .eq(UserFunc::getId, followUserId)
-        );
+        UserFunc fan_userFunc = userFuncService.getOne(new LambdaQueryWrapper<>(UserFunc.class).eq(UserFunc::getId, userId));
+        UserFunc follower_userFunc = userFuncService.getOne(new LambdaQueryWrapper<>(UserFunc.class).eq(UserFunc::getId, followUserId));
 
 
-        if (isFollow && save(UserFollow.builder() //关注 -> 新增
-                .followerId(userId)
-                .followedId(followUserId)
-                .build())) {
+        if (isFollow &&
+                save(UserFollow.builder() //关注 -> 新增
+                        .followerId(userId)
+                        .followedId(followUserId)
+                        .build())) {
 
             stringRedisTemplate.opsForSet().add(key, followUserId.toString()); //Redis集合中添加关注用户的id
 
@@ -63,7 +59,6 @@ public class UserFollowServiceImpl extends ServiceImpl<UserFollowMapper, UserFol
             follower_userFunc.setFans(follower_userFunc.getFans() + 1);
 
         } else {
-
             remove(new QueryWrapper<UserFollow>() // 关注 -> 删除
                     .eq("follower_id", userId)
                     .eq("followed_id", followUserId));

@@ -1,6 +1,7 @@
 package org.shop.admin.flow.websocket;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,11 @@ import java.time.format.DateTimeFormatter;
  */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class WebSocketTask {
 
 
-    private WebSocketServer webSocketServer;
+    private final WebSocketServer webSocketServer;
 
     /**
      * 通过WebSocket每隔30分钟向所有端发送提醒

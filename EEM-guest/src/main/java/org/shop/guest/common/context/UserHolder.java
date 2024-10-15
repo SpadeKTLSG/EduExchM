@@ -5,6 +5,7 @@ import org.shop.guest.entity.dto.UserLocalDTO;
 
 /**
  * 用户上下文
+ *
  */
 public class UserHolder {
 

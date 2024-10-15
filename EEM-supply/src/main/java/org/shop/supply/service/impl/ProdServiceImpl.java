@@ -31,8 +31,10 @@ import org.shop.supply.entity.res.RedisData;
 import org.shop.supply.entity.vo.ProdAllVO;
 import org.shop.supply.entity.vo.ProdGreatVO;
 import org.shop.supply.mapper.ProdMapper;
+import org.shop.supply.mapper.repo.SupplyRepo;
 import org.shop.supply.service.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,28 +57,42 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      */
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
+
     private final ProdFuncService prodFuncService;
     private final ProdCateService prodCateService;
-    private final UpshowService upshowService;
-    private final RotationService rotationService;
-    private final HotsearchService hotsearchService;
-
 
     private final OrderClient orderClient;
     private final ProdMapper prodMapper;
+    private final SupplyRepo supplyRepo;
+
+    private final StringRedisTemplate stringRedisTemplate;
+
+    private RotationService rotationService;
+    private UpshowService upshowService;
+    private HotsearchService hotsearchService;
+
+
+    // 使用Setter注入解决循环依赖
+    public void setUpshowService(@Lazy UpshowService upshowService) {
+        this.upshowService = upshowService;
+    }
+
+    public void setRotationService(@Lazy RotationService rotationService) {
+        this.rotationService = rotationService;
+    }
+
+    public void setHotsearchService(@Lazy HotsearchService hotsearchService) {
+        this.hotsearchService = hotsearchService;
+    }
+
 
     //! Func
 
-    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public void checkA(ProdLocateDTO prodLocateDTO) {
 
-        Prod prod = this.getOne(new LambdaQueryWrapper<Prod>()// 找到对应商品id, 通过id找到另一张表UserFunc, 修改状态字段
-                .eq(Prod::getName, prodLocateDTO.getName())
-                .eq(Prod::getUserId, prodLocateDTO.getUserId())
-        );
-
+        Prod prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
         ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );
@@ -89,11 +105,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     @Override
     public void freezeA(ProdLocateDTO prodLocateDTO) {
 
-        Prod prod = this.getOne(new LambdaQueryWrapper<Prod>()// 找到对应商品id, 通过id找到另一张表UserFunc, 修改状态字段
-                .eq(Prod::getName, prodLocateDTO.getName())
-                .eq(Prod::getUserId, prodLocateDTO.getUserId())
-        );
-
+        Prod prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
         ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );
@@ -143,8 +155,8 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     @Override
     public List<ProdFunc> getOutdateProdA(LocalDateTime time) {
 
-        List<ProdFunc> prodList2Check = prodFuncService.query() //需要保证其ShowoffEndtime存在!
-                .isNotNull("showoff_endtime") //这里是为了保证不会出现空指针异常
+        List<ProdFunc> prodList2Check = prodFuncService.query()
+                .isNotNull("showoff_endtime") //需要保证其ShowoffEndtime存在防止空指针
                 .list();
 
         prodList2Check.removeIf(prodFunc -> prodFunc.getShowoffEndtime().isAfter(time));   //需要手动取出来判断是否过期
@@ -317,10 +329,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
     @Override
     public Prod getProd8EzA(ProdLocateDTO prodLocateDTO) {
-        return this.getOne(new LambdaQueryWrapper<Prod>()
-                .eq(Prod::getName, prodLocateDTO.getName())
-                .eq(Prod::getUserId, prodLocateDTO.getUserId())
-        );
+        return supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
     }
 
 
@@ -399,10 +408,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
-        Prod prod = this.getOne(new LambdaQueryWrapper<Prod>()
-                .eq(Prod::getName, name)
-                .eq(Prod::getUserId, userId)
-        );
+        Prod prod = supplyRepo.findByProdName_UserId(name, userId);
 
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
@@ -441,9 +447,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     @Transactional
     public ProdGreatVO getProdG(ProdLocateDTO prodLocateDTO) {
 
-        Prod prod = this.getOne(Wrappers.<Prod>lambdaQuery()
-                .eq(Prod::getName, prodLocateDTO.getName())
-                .eq(Prod::getUserId, prodLocateDTO.getUserId()));
+        Prod prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
 
 
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
@@ -548,6 +552,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
      * 查询商品 通过设置逻辑过期方法 -> 解决缓存击穿
      */
     private Prod queryProdWithLogicalExpire(ProdLocateDTO prodLocateDTO) {
+
         String locateKey = prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
         String keyProd = RedisConstant.CACHE_PROD_KEY + locateKey;  //构建Prod的Key
 
@@ -598,19 +603,16 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         String keyProd = RedisConstant.CACHE_PROD_KEY + prodLocateDTO.getUserId() + ":" + prodLocateDTO.getName();
 
-        //数据库查询 : MP的lambdaQuery查询
-        Prod prod = this.getOne(Wrappers.<Prod>lambdaQuery()
-                .eq(Prod::getName, prodLocateDTO.getName())
-                .eq(Prod::getUserId, prodLocateDTO.getUserId()));
+        Prod prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
 
         Thread.sleep(RedisConstant.LOCK_PROD_FAIL_WT * 4); // 模拟重建缓存耗时
 
-        //包装 RedisData 对象
-        RedisData redisData = new RedisData();
+
+        RedisData<Prod> redisData = new RedisData<>(); //构建RedisData
         redisData.setData(prod);
         redisData.setExpireTime(LocalDateTime.now().plusSeconds(expirSeconds));
 
-        stringRedisTemplate.opsForValue().set(keyProd, JSONUtil.toJsonStr(redisData)); //因为是手动判断过期, 所以不需要设置TTL
+        stringRedisTemplate.opsForValue().set(keyProd, JSONUtil.toJsonStr(redisData)); //手动判断过期不需要设置TTL
     }
 
 
@@ -645,12 +647,11 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
             }
             //获取成功执行重建操作
 
-            //查数据库流程: MP的lambdaQuery查询
-            prod = this.getOne(Wrappers.<Prod>lambdaQuery()
-                    .eq(Prod::getName, prodLocateDTO.getName())
-                    .eq(Prod::getUserId, prodLocateDTO.getUserId()));
+            //查数据库
+            prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
 
-            if (prod == null) { //还查不到就要进行缓存穿透的空数据设置
+            //还查不到就要进行缓存穿透的空数据设置
+            if (prod == null) {
                 stringRedisTemplate.opsForValue().set(keyProd, "", RedisConstant.CACHE_NULL_TTL, TimeUnit.MINUTES); //设置TTL - NULL
                 return null;
             }
@@ -707,9 +708,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         //实现在高并发的情况下缓存穿透设置空对象
 
         //查数据库流程: MP的lambdaQuery查询
-        Prod prod = this.getOne(Wrappers.<Prod>lambdaQuery()
-                .eq(Prod::getName, prodLocateDTO.getName())
-                .eq(Prod::getUserId, prodLocateDTO.getUserId()));
+        Prod prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
 
 
         if (prod == null) { //还查不到就要进行缓存穿透的空数据设置
@@ -736,9 +735,8 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
         Long id = prodCate.getId();
 
-        return this.page(
-                new Page<>(current, SystemConstant.MAX_PAGE_SIZE),
-                Wrappers.<Prod>lambdaQuery().eq(Prod::getCategoryId, id));
+        return this.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE),
+                Wrappers.<Prod>lambdaQuery().eq(Prod::getCategoryId, id).eq(Prod::getUserId, UserHolder.getUser().getId()));
     }
 
 

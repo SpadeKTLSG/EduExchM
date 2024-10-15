@@ -20,34 +20,96 @@ spring:
 
     gateway:
       routes:
-        - id: user-service # 路由标示，必须唯一
-          uri: lb://userservice # 路由的目标地址
-          predicates: # 路由断言，判断请求是否符合规则
-            - Path=/user/** # 路径断言，判断路径是否是以/user开头，如果是则符合
-        - id: order-service
-          uri: lb://orderservice
-          predicates:
-            - Path=/order/**
-          filters:
-            - AddRequestHeader=key, value
+        # 规则. 注意微服务是根据单体拆的, 路径存在不规范
+        #        - id: admin-service # 必须唯一路由标识
+        #          uri: lb://adminservice # 路由的目标地址
+        #          predicates: # 路由断言，判断请求是否符合规则
+        #            - Path=/admin/**
+        #          filters:
+        #            - AddRequestHeader=Authorization, "Bearer {token}"
 
-  #
-  #
-  #      globalcors: # 全局的跨域处理
-  #        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
-  #        corsConfigurations:
-  #          "[/**]":
-  #            allowedOrigins: # 允许哪些网站的跨域请求
-  #              - "http://localhost:8090"
-  #            allowedMethods: # 允许的跨域ajax的请求方式
-  #              - "GET"
-  #              - "POST"
-  #              - "DELETE"
-  #              - "PUT"
-  #              - "OPTIONS"
-  #            allowedHeaders: "*" # 允许在请求中携带的头信息
-  #            allowCredentials: true # 是否允许携带cookie
-  #            maxAge: 360000 # 这次跨域检测的有效期
+        # admin-service
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/admin/panel/supply/**
+
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/admin/employee/**
+
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/customer/admin/**
+
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/customer/guest/**
+
+
+        # guest-service
+        - id: guest-service
+          uri: lb://guest
+          predicates:
+            - Path=/admin/user/**
+
+        - id: guest-service
+          uri: lb://guest
+          predicates:
+            - Path=/guest/user/**
+
+
+        # supply-service
+        - id: supply-service
+          uri: lb://supplyservice
+          predicates:
+            - Path=/admin/panel/supply/**
+
+        - id: supply-service
+          uri: lb://supplyservice
+          predicates:
+            - Path=/admin/prod**
+
+        - id: supply-service
+          uri: lb://supplyservice
+          predicates:
+            - Path=/guest/prod/**
+
+
+        # trade-service
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/admin/order/**
+
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/guest/order/**
+
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/admin/voucher/**
+
+        - id: trade-service
+          uri: lb://tradeservice
+          predicates:
+            - Path=/guest/voucher/**
+
+
+      globalcors: # 全局的跨域处理
+        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "http://localhost" # 允许跨域请求
+            allowedMethods: "*" # 允许所有的跨域ajax的请求方式
+            allowedHeaders: "*" # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie
+            maxAge: 360000 # 这次跨域检测的有效期
 
   profiles:
     active: dev   # 环境 dev|test|prod
@@ -115,3 +177,24 @@ feign:
     config:
       default:
         loggerLevel: FULL #  日志级别
+
+
+
+# 网关白名单路径
+auth:
+  exclude-paths:
+    - /admin.html
+    - /admin/employee/login
+    - /admin/employee/register
+    - /admin/employee/code
+    - /guest.html
+    - /guest/user/login
+    - /guest/user/register
+    - /guest/user/code
+    - /swagger-ui/**
+    - /swagger-ui.html
+    - /doc.html
+    - /webjars/**
+    - /swagger-resources/**
+    - /v3/**
+    - /error

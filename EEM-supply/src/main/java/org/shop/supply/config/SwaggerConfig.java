@@ -19,9 +19,9 @@ public class SwaggerConfig {
     public OpenAPI springOpenAPI() {
         return new OpenAPI()
                 .openapi("3.0.0")
-                .info(new Info().title("Guest API文档")
+                .info(new Info().title("Supply API文档")
                         .contact(new Contact())
-                        .description("客户端API文档")
+                        .description("物资端API文档")
                         .version("1.0.0"));
 
     }

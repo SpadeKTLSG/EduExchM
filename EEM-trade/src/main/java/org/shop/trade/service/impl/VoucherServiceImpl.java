@@ -19,6 +19,7 @@ import org.shop.trade.entity.dto.VoucherAllDTO;
 import org.shop.trade.entity.dto.VoucherLocateDTO;
 import org.shop.trade.entity.remote.UserFunc;
 import org.shop.trade.mapper.VoucherMapper;
+import org.shop.trade.mapper.repo.TradeRepo;
 import org.shop.trade.service.OrderService;
 import org.shop.trade.service.VoucherService;
 import org.springframework.beans.BeanUtils;
@@ -38,9 +39,8 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
     private final OrderService orderService;
 
-
     private final UserClient userClient;
-
+    private final TradeRepo tradeRepo;
 
     @Override
     public void putSeckillVoucherA(VoucherAllDTO voucherAllDTO) {
@@ -66,9 +66,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Transactional
     public void claimVoucherG(VoucherLocateDTO voucherLocateDTO) {
 
-        Voucher voucher = this.getOne(new LambdaQueryWrapper<Voucher>()
-                .eq(Voucher::getName, voucherLocateDTO.getName())
-                .eq(Voucher::getUserId, TestsConstant.STORE_USERID));
+        Voucher voucher = tradeRepo.findByVoucherName_UserId(voucherLocateDTO.getName(), TestsConstant.STORE_USERID);
 
         if (voucher == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
@@ -95,10 +93,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Transactional
     public Integer useVoucher4Seller(VoucherLocateDTO voucherLocateDTO) {
 
-        Voucher voucher = this.getOne(new LambdaQueryWrapper<Voucher>()
-                .eq(Voucher::getName, voucherLocateDTO.getName())
-                .eq(Voucher::getUserId, UserHolder.getUser().getId()));
-
+        Voucher voucher = tradeRepo.findByVoucherName_UserId(voucherLocateDTO.getName(), UserHolder.getUser().getId());
         if (voucher == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         if (Objects.equals(voucher.getStatus(), Voucher.USED) || Objects.equals(voucher.getStatus(), Voucher.OUTDATE) || voucher.getStock() == 0)
@@ -133,9 +128,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     @Transactional
     public boolean useVoucher4Buyer(VoucherLocateDTO voucherLocateDTO) {
 
-        Voucher voucher = this.getOne(new LambdaQueryWrapper<Voucher>()
-                .eq(Voucher::getName, voucherLocateDTO.getName())
-                .eq(Voucher::getUserId, UserHolder.getUser().getId()));
+        Voucher voucher = tradeRepo.findByVoucherName_UserId(voucherLocateDTO.getName(), UserHolder.getUser().getId());
 
         if (voucher == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
@@ -162,8 +155,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
         //对目前开启的交易判定是否存在, 存在则视为一次准入成功, 对用户进行增加嘉奖值操作(否则没有奖励)
 
-        Order order = orderService.getOne(new LambdaQueryWrapper<Order>()
-                .eq(Order::getBuyerId, TestsConstant.BUYER_USERID));
+        Order order = orderService.getOne(new LambdaQueryWrapper<Order>().eq(Order::getBuyerId, TestsConstant.BUYER_USERID));
 
         if (order == null) return false;
 
@@ -177,9 +169,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
 
     @Override
     public List<Voucher> getOutdateOnesA(Integer status, LocalDateTime time) {
-        List<Voucher> voucherList2Check = this.query()
-                .eq("status", status)
-                .list();
+        List<Voucher> voucherList2Check = this.query().eq("status", status).list();
 
         //需要手动取出来判断是否过期
         voucherList2Check.removeIf(voucher -> voucher.getEndTime().isAfter(time));
@@ -197,9 +187,7 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
     public Page<Voucher> searchVoucherB(String name, Integer current) {
 
         //分页展示模糊匹配的所有可能结果
-        return this.page(new Page<>(current, 10),
-                new LambdaQueryWrapper<Voucher>()
-                        .like(Voucher::getName, name));
+        return this.page(new Page<>(current, 10), new LambdaQueryWrapper<Voucher>().like(Voucher::getName, name));
     }
 
 

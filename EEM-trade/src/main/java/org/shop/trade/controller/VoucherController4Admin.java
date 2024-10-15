@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/voucher")
 @RestController
 @RequiredArgsConstructor
-public class VoucherController {
+public class VoucherController4Admin {
 
 
     private final VoucherService voucherService;

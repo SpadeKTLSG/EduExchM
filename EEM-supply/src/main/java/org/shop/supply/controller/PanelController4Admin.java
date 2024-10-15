@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @Tag(name = "Panel", description = "管理面板")
-@RequestMapping("/admin/panel")
+@RequestMapping("/admin/panel/supply")
 @RestController
 @RequiredArgsConstructor
 public class PanelController4Admin {

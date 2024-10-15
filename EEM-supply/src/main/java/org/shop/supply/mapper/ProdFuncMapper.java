@@ -1,8 +1,8 @@
 package org.shop.supply.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.github.yulichang.base.MPJBaseMapper;
 import org.shop.supply.entity.ProdFunc;
 
 
-public interface ProdFuncMapper extends BaseMapper<ProdFunc> {
+public interface ProdFuncMapper extends MPJBaseMapper<ProdFunc> {
 }

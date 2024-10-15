@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/customer/admin")  //customer为客户端和服务端的统一前缀
 @RestController
 @RequiredArgsConstructor
-public class CustomerController {
+public class CustomerController4Admin {
 
 
     private final WebSocketServer webSocketServer;

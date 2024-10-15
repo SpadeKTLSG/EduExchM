@@ -1,8 +1,9 @@
 package org.shop.supply.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import com.github.yulichang.base.MPJBaseMapper;
 import org.shop.supply.entity.Hotsearch;
 
 
-public interface HotsearchMapper extends BaseMapper<Hotsearch> {
+public interface HotsearchMapper extends MPJBaseMapper<Hotsearch> {
 }

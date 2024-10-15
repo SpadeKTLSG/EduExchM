@@ -7,6 +7,14 @@ spring:
   application:
     name: supply
 
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos发现地址
+      config:
+        server-addr: ${eduexch.nacos.host}:${eduexch.nacos.port} # nacos配置中心地址
+
+
   profiles:
     active: dev   # 环境 dev|test|prod
 
@@ -147,3 +155,13 @@ springdoc:
   # swagger
   swagger-ui:
     path: admin.html # http://localhost:8085/admin.html
+
+
+# feign
+feign:
+  okhttp:
+    enabled: true # 开启连接池
+  client:
+    config:
+      default:
+        loggerLevel: FULL #  日志级别
