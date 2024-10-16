@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.supply.common.constant.SystemConstant;
 import org.shop.supply.common.context.UserHolder;
@@ -15,6 +16,7 @@ import org.shop.supply.entity.ProdFunc;
 import org.shop.supply.entity.dto.ProdGreatDTO;
 import org.shop.supply.entity.dto.ProdLocateDTO;
 import org.shop.supply.entity.res.Result;
+import org.shop.supply.flow.es.ProdSearchService;
 import org.shop.supply.service.ProdCateService;
 import org.shop.supply.service.ProdFuncService;
 import org.shop.supply.service.ProdService;
@@ -34,7 +36,7 @@ public class ProdController4Guest {
     private final ProdService prodService;
     private final ProdCateService prodCateService;
     private final ProdFuncService prodFuncService;
-
+    private final ProdSearchService prodSearchService;
 
     //! Client
     @GetMapping("/remote/Prod/getById/{id}")
@@ -81,7 +83,7 @@ public class ProdController4Guest {
         prodService.putProdStatusG(prodLocateDTO, func);
         return Result.success();
     }
-    //http://localhost:8086/guest/prod/update/status/0
+    //http://localhost:10080/guest/prod/update/status/0
 
 
     //! ADD
@@ -97,7 +99,7 @@ public class ProdController4Guest {
         prodService.postProdG(prodGreatDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/prod/save
+    //http://localhost:10080/guest/prod/save
 
 
     //! DELETE
@@ -113,7 +115,7 @@ public class ProdController4Guest {
         prodService.deleteProdG(name);
         return Result.success();
     }
-    //http://localhost:8086/guest/prod/delete
+    //http://localhost:10080/guest/prod/delete
 
 
     //! UPDATE
@@ -133,7 +135,7 @@ public class ProdController4Guest {
             return Result.error(e.getMessage());
         }
     }
-    //http://localhost:8086/guest/prod/update
+    //http://localhost:10080/guest/prod/update
 
 
     /**
@@ -153,7 +155,7 @@ public class ProdController4Guest {
             return Result.error(e.getMessage());
         }
     }
-    //http://localhost:8086/guest/prod/update/cache
+    //http://localhost:10080/guest/prod/update/cache
 
 
     //! QUERY
@@ -168,7 +170,7 @@ public class ProdController4Guest {
     public Result pageCate(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodCateService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
     }
-    //http://localhost:8086/guest/prod/category/page
+    //http://localhost:10080/guest/prod/category/page
 
 
     /**
@@ -184,7 +186,7 @@ public class ProdController4Guest {
                         .eq(Prod::getUserId, UserHolder.getUser().getId()))
         );
     }
-    //http://localhost:8086/guest/prod/page
+    //http://localhost:10080/guest/prod/page
 
 
     /**
@@ -197,7 +199,7 @@ public class ProdController4Guest {
     public Result getProdG(@RequestBody ProdLocateDTO prodLocateDTO) {
         return Result.success(prodService.getProdG(prodLocateDTO));
     }
-    //http://localhost:8086/guest/prod/get
+    //http://localhost:10080/guest/prod/get
 
 
     /**
@@ -211,7 +213,7 @@ public class ProdController4Guest {
     public Result getProd8CG(@RequestBody ProdLocateDTO prodLocateDTO) {
         return Result.success(prodService.getProd8CG(prodLocateDTO));
     }
-    //http://localhost:8086/guest/prod/get/cache
+    //http://localhost:10080/guest/prod/get/cache
 
 
     /**
@@ -223,7 +225,7 @@ public class ProdController4Guest {
     public Result pageProd8CateG(@PathVariable("cate") String cate, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.pageProd8CateG(cate, current));
     }
-    //http://localhost:8086/guest/prod/category/prod/0
+    //http://localhost:10080/guest/prod/category/prod/0
 
 
     /**
@@ -235,7 +237,35 @@ public class ProdController4Guest {
     public Result pageAllProd(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
     }
-    //http://localhost:8086/guest/prod/all/page
+    //http://localhost:10080/guest/prod/all/page
+
+    /**
+     * ES分页简单查询所有商品列表(仅Prod表) + 数据同步功能
+     */
+    @SneakyThrows
+    @GetMapping("/all/page/es")
+    @Operation(summary = "ES分页查询所有商品列表")
+    @Parameters(@Parameter(name = "current", description = "当前页", required = true))
+    public Result pageAllProd4ES_Ez(@RequestParam(value = "current", defaultValue = "1") Integer current) {
+        return Result.success(prodSearchService.searchProd(current, SystemConstant.MAX_PAGE_SIZE));
+    }
+    //http://localhost:10080/guest/prod/all/page/es
+
+    /**
+     * 按Name模糊搜索商品(仅Prod表信息)
+     * <p>前端搜索框, 分页展示结果</p>
+     * <p>future: 继承搜索权重效果</p>
+     */
+    @GetMapping("/search/name/es/suggestion")
+    @Operation(summary = "按Name模糊搜索商品补全功能")
+    @Parameters({
+            @Parameter(name = "name", description = "商品名称", required = true),
+            @Parameter(name = "current", description = "当前页", required = true)
+    })
+    public Result searchProd4ES(@RequestParam("key") String prefix) {
+        return Result.success(prodService.searchProd4ESSuggestion(prefix));
+    }
+    //http://localhost:10080/guest/prod/search/name/es/suggestion
 
 
     /**
@@ -248,7 +278,7 @@ public class ProdController4Guest {
     public Result pageProdCateG(@PathVariable("cate") String cate, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.pageProdCateG(cate, current));
     }
-    //http://localhost:8086/guest/prod/cateall/page/人类
+    //http://localhost:10080/guest/prod/cateall/page/...
 
 
     /**
@@ -265,7 +295,7 @@ public class ProdController4Guest {
     public Result searchProd8EzG(@RequestParam("name") String name, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.searchProd8EzG(name, current));
     }
-    //http://localhost:8086/guest/prod/search/name
+    //http://localhost:10080/guest/prod/search/name
 
 
 }

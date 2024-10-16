@@ -4,6 +4,9 @@ import com.github.yulichang.autoconfigure.consumer.MybatisPlusJoinPropertiesCons
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * MybatisPlus配置
+ */
 @Configuration
 public class MybatisPlusConfig {
 

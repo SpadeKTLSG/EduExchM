@@ -29,7 +29,7 @@
 
     <properties>
         <!--core-->
-        <EduExch.shop.version>2.0.0-RELEASE</EduExch.shop.version>
+        <EduExch.shop.version>3.0.0-RELEASE</EduExch.shop.version>
         <java.version>17</java.version>
         <maven.compiler.plugin.version>3.12.0</maven.compiler.plugin.version>
 

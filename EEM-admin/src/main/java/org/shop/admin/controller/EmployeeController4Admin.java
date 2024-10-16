@@ -44,7 +44,7 @@ public class EmployeeController4Admin {
     public Result sendCodeA(@RequestParam("phone") String phone, HttpSession session) {
         return Result.success(employeeService.sendCodeA(phone, session));
     }
-    //http://localhost:10082/admin/employee/code?phone=15985785169
+    //http://localhost:10080/admin/employee/code?phone=15985785169
 
 
     /**
@@ -56,7 +56,7 @@ public class EmployeeController4Admin {
     public Result loginA(@RequestBody EmployeeLoginDTO employeeLoginDTO, HttpSession session) {
         return Result.success(employeeService.loginA(employeeLoginDTO, session));
     }
-    //http://localhost:10082/admin/employee/login
+    //http://localhost:10080/admin/employee/login
 
 
     /**
@@ -68,7 +68,7 @@ public class EmployeeController4Admin {
         employeeService.logoutA();
         return Result.success();
     }
-    //http://localhost:10082/admin/employee/logout
+    //http://localhost:10080/admin/employee/logout
 
 
     //! ADD
@@ -83,7 +83,7 @@ public class EmployeeController4Admin {
         employeeService.postEmployeeA(employeeDTO);
         return Result.success();
     }
-    //http://localhost:10082/admin/employee/save
+    //http://localhost:10080/admin/employee/save
 
 
     //没有手动注册功能, 由系统实现
@@ -101,7 +101,7 @@ public class EmployeeController4Admin {
         employeeService.deleteEmployeeA(account);
         return Result.success();
     }
-    //http://localhost:10082/admin/employee/delete
+    //http://localhost:10080/admin/employee/delete
 
 
     //! UPDATE
@@ -116,7 +116,7 @@ public class EmployeeController4Admin {
         employeeService.putEmployeeA(employeeAllDTO);
         return Result.success();
     }
-    //http://localhost:10082/admin/employee/update
+    //http://localhost:10080/admin/employee/update
 
 
     //! QUERY
@@ -130,7 +130,7 @@ public class EmployeeController4Admin {
     public Result getEmployeeA(@PathVariable("account") String account) {
         return Result.success(employeeService.getEmployeeA(account));
     }
-    //http://localhost:10082/admin/employee/Account查员工
+    //http://localhost:10080/admin/employee/Account查员工
 
 
     /**
@@ -147,5 +147,5 @@ public class EmployeeController4Admin {
             return employeeVO;
         }));
     }
-    //http://localhost:10082/admin/employee/page
+    //http://localhost:10080/admin/employee/page
 }

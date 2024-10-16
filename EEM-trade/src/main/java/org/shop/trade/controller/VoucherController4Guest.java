@@ -51,7 +51,7 @@ public class VoucherController4Guest {
         voucherService.claimVoucherG(voucherLocateDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/voucher/claim
+    //http://localhost:10080/guest/voucher/claim
 
 
     //! ADD
@@ -73,7 +73,7 @@ public class VoucherController4Guest {
     public Result useVoucher4Seller(@RequestBody VoucherLocateDTO voucherLocateDTO) {
         return Result.success(voucherService.useVoucher4Seller(voucherLocateDTO));
     }
-    //http://localhost:8086/guest/voucher/use/seller
+    //http://localhost:10080/guest/voucher/use/seller
 
 
     /**
@@ -88,7 +88,7 @@ public class VoucherController4Guest {
     public Result useVoucher4Buyer(@RequestBody VoucherLocateDTO voucherLocateDTO) {
         return voucherService.useVoucher4Buyer(voucherLocateDTO) ? Result.success(true) : Result.success(false);  //是否能成功获得Bonus
     }
-    //http://localhost:8086/guest/voucher/use/buyer
+    //http://localhost:10080/guest/voucher/use/buyer
 
 
     //! UPDATE
@@ -113,7 +113,7 @@ public class VoucherController4Guest {
                     return voucherStoreVO;
                 }));
     }
-    //http://localhost:8086/guest/voucher/page/seller
+    //http://localhost:10080/guest/voucher/page/seller
 
 
     /**
@@ -133,7 +133,7 @@ public class VoucherController4Guest {
                     return voucherStoreVO;
                 }));
     }
-    //http://localhost:8086/guest/voucher/page/buyer
+    //http://localhost:10080/guest/voucher/page/buyer
 
 
     /**
@@ -154,7 +154,7 @@ public class VoucherController4Guest {
                     return voucherStoreVO;
                 }));
     }
-    //http://localhost:8086/guest/voucher/me/page/seller
+    //http://localhost:10080/guest/voucher/me/page/seller
 
 
     /**
@@ -177,7 +177,7 @@ public class VoucherController4Guest {
                     return voucherStoreVO;
                 }));
     }
-    //http://localhost:8086/guest/voucher/me/page/buyer
+    //http://localhost:10080/guest/voucher/me/page/buyer
 
 
     /**
@@ -192,6 +192,6 @@ public class VoucherController4Guest {
     public Result searchVoucherB(@RequestParam("name") String name, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(voucherService.searchVoucherB(name, current));
     }
-    //http://localhost:8086/guest/voucher/search/name
+    //http://localhost:10080/guest/voucher/search/name
 
 }

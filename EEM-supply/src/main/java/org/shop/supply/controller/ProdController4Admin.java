@@ -56,7 +56,7 @@ public class ProdController4Admin {
         prodService.checkA(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/prod/check
+    //http://localhost:10080/admin/prod/check
 
 
     /**
@@ -69,7 +69,7 @@ public class ProdController4Admin {
         prodService.freezeA(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/prod/freeze
+    //http://localhost:10080/admin/prod/freeze
 
 
     /**
@@ -82,7 +82,7 @@ public class ProdController4Admin {
     public Result page2CheckA(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.page2CheckA(current));
     }
-    //http://localhost:8085/admin/prod/page2Check
+    //http://localhost:10080/admin/prod/page2Check
 
 
     //! ADD
@@ -97,7 +97,7 @@ public class ProdController4Admin {
         prodCateService.postCateA(prodCateAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/prod/cate/save
+    //http://localhost:10080/admin/prod/cate/save
 
 
     //! DELETE
@@ -113,7 +113,7 @@ public class ProdController4Admin {
         prodService.deleteProdA(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/prod/delete/one
+    //http://localhost:10080/admin/prod/delete/one
 
 
     /**
@@ -126,7 +126,7 @@ public class ProdController4Admin {
         prodCateService.deleteCateA(prodCateAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/prod/cate/delete
+    //http://localhost:10080/admin/prod/cate/delete
 
 
     //! UPDATE
@@ -155,7 +155,7 @@ public class ProdController4Admin {
     public Result getProd8EzA(@RequestBody ProdLocateDTO prodLocateDTO) {
         return Result.success(prodService.getProd8EzA(prodLocateDTO));
     }
-    //http://localhost:8085/admin/prod/one
+    //http://localhost:10080/admin/prod/one
 
 
     /**
@@ -167,7 +167,7 @@ public class ProdController4Admin {
     public Result pageCateA(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
     }
-    //http://localhost:8085/admin/prod/cate/page
+    //http://localhost:10080/admin/prod/cate/page
 
 
     /**
@@ -180,7 +180,7 @@ public class ProdController4Admin {
     public Result pageProdA(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.pageProdA(current));
     }
-    //http://localhost:8085/admin/prod/page
+    //http://localhost:10080/admin/prod/page
 
 
     /**
@@ -196,6 +196,6 @@ public class ProdController4Admin {
     public Result searchProdA(@RequestParam("name") String name, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodService.searchProdA(name, current));
     }
-    //http://localhost:8085/admin/prod/search/name?name=天&current=1
+    //http://localhost:10080/admin/prod/search/name?name=天&current=1
 
 }

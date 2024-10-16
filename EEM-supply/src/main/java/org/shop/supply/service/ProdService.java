@@ -15,7 +15,28 @@ import java.util.List;
 public interface ProdService extends IService<Prod> {
 
 
+    //! ES
+
+    /**
+     * 搜索单件商品自动补全
+     */
+    List<String> searchProd4ESSuggestion(String perfix);
+
+    //! Sync 4 MQ
+
+    /**
+     * 删除
+     */
+    void deleteById(Long id);
+
+    /**
+     * 插入
+     */
+    void insertById(Long id);
+
+
     //! Func
+
 
     /**
      * 管理员审核单件商品

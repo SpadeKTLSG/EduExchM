@@ -53,7 +53,7 @@ public class OrderController4Guest {
         orderService.postOrderG(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/order/start
+    //http://localhost:10080/guest/order/start
 
 
     /**
@@ -69,7 +69,7 @@ public class OrderController4Guest {
         orderService.putOrderSeckillG(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/order/start/seckill
+    //http://localhost:10080/guest/order/start/seckill
 
 
     //! ADD
@@ -88,7 +88,7 @@ public class OrderController4Guest {
         orderService.deleteOrderG(orderAllDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/order/stop
+    //http://localhost:10080/guest/order/stop
 
 
     //! UPDATE
@@ -104,7 +104,7 @@ public class OrderController4Guest {
         orderService.sellerKnowAnswer(orderAllDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/order/confirm/seller/answer
+    //http://localhost:10080/guest/order/confirm/seller/answer
 
 
     /**
@@ -117,7 +117,7 @@ public class OrderController4Guest {
         orderService.buyerKnowAnswer(orderAllDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/order/confirm/buyer/answer
+    //http://localhost:10080/guest/order/confirm/buyer/answer
 
 
     /**
@@ -131,7 +131,7 @@ public class OrderController4Guest {
         orderService.sellerKnowClose(orderAllDTO);
         return Result.success();
     }
-    //http://localhost:8086/guest/order/confirm/seller/close
+    //http://localhost:10080/guest/order/confirm/seller/close
 
 
     //! QUERY
@@ -155,7 +155,7 @@ public class OrderController4Guest {
                         .eq(Order::getSellerId, userId)
         ));
     }
-    //http://localhost:8086/guest/order/list
+    //http://localhost:10080/guest/order/list
 
 
     /**
@@ -168,7 +168,7 @@ public class OrderController4Guest {
     public Result getOrderG(@RequestBody OrderAllDTO orderAllDTO) {
         return Result.success(orderService.getOrderG(orderAllDTO));
     }
-    //http://localhost:8086/guest/order/detail
+    //http://localhost:10080/guest/order/detail
 
 
     /**
@@ -185,7 +185,7 @@ public class OrderController4Guest {
                 .and(i -> i.eq(Order::getBuyerId, UserHolder.getUser().getId()).or().eq(Order::getSellerId, UserHolder.getUser().getId()))
         ));
     }
-    //http://localhost:8086/guest/order/status/count/1
+    //http://localhost:10080/guest/order/status/count/1
 
 
 }

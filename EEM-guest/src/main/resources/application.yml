@@ -135,9 +135,7 @@ logging:
   pattern:
     dateformat: mm:ss.SSS
 
-# 自定义
-eduexch:
-
+ 
 
 
 
@@ -154,7 +152,7 @@ management:
 springdoc:
   # swagger
   swagger-ui:
-    path: admin.html # http://localhost:8085/admin.html
+    path: admin.html # http://localhost:10080/admin.html
 
 
 

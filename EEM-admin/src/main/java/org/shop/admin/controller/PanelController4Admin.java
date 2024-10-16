@@ -45,7 +45,7 @@ public class PanelController4Admin {
         noticeService.publishNotice(noticeAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/notice/save
+    //http://localhost:10080/admin/panel/notice/save
 
 
     //! DELETE
@@ -60,7 +60,7 @@ public class PanelController4Admin {
         noticeService.removeNotice(noticeAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/notice/delete
+    //http://localhost:10080/admin/panel/notice/delete
 
 
     //! UPDATE
@@ -75,7 +75,7 @@ public class PanelController4Admin {
         noticeService.updateNotice(noticeAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/notice/update
+    //http://localhost:10080/admin/panel/notice/update
 
 
     //! QUERY

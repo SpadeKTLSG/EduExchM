@@ -13,6 +13,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.Objects;
 
+/**
+ * 登录拦截器
+ */
 @Slf4j
 public class GreatLoginInterceptor implements HandlerInterceptor {
 
