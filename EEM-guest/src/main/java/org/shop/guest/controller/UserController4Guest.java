@@ -76,7 +76,7 @@ public class UserController4Guest {
         if (mes.startsWith("!")) return Result.error(mes.substring(1));
         return Result.success(mes);
     }
-    //http://localhost:10083/guest/user/code?phone=15985785169
+    //http://localhost:10080/guest/user/code?phone=15985785169
 
 
     /**
@@ -88,7 +88,7 @@ public class UserController4Guest {
     public Result loginG(@RequestBody UserLoginDTO userLoginDTO, HttpSession session) {
         return Result.success(userService.loginG(userLoginDTO, session));
     }
-    //http://localhost:10083/guest/user/login
+    //http://localhost:10080/guest/user/login
 
 
     /**
@@ -101,7 +101,7 @@ public class UserController4Guest {
         userService.logoutG();
         return Result.success();
     }
-    //http://localhost:10083/guest/user/logout
+    //http://localhost:10080/guest/user/logout
 
 
     /**
@@ -112,7 +112,7 @@ public class UserController4Guest {
     public Result whoAmI() {
         return Result.success(userService.getUser8EzIdA(UserHolder.getUser().getId()).getAccount());
     }
-    //http://localhost:10083/guest/user/me
+    //http://localhost:10080/guest/user/me
 
 
     //*---- 关注 ----
@@ -128,7 +128,7 @@ public class UserController4Guest {
         userFollowService.follow(followUserId, isFollow);
         return Result.success();
     }
-    //http://localhost:10083/guest/user/follow/2/true
+    //http://localhost:10080/guest/user/follow/2/true
 
 
     /**
@@ -141,7 +141,7 @@ public class UserController4Guest {
 
         return Result.success(userFollowService.isFollow(followUserId));
     }
-    //http://localhost:10083/guest/user/follow/ornot/2
+    //http://localhost:10080/guest/user/follow/ornot/2
 
 
     /**
@@ -153,7 +153,7 @@ public class UserController4Guest {
     public Result shareFollowG(@PathVariable("id") Long id) {
         return Result.success(userFollowService.shareFollow(id));
     }
-    //http://localhost:10083/guest/user/follow/share/2
+    //http://localhost:10080/guest/user/follow/share/2
 
 
     //*---- 签到 ----
@@ -168,7 +168,7 @@ public class UserController4Guest {
         userService.doSignG();
         return Result.success();
     }
-    //http://localhost:10083/guest/user/sign/add
+    //http://localhost:10080/guest/user/sign/add
 
 
     /**
@@ -179,7 +179,7 @@ public class UserController4Guest {
     public Result signCountG() {
         return Result.success(userService.signCountG());
     }
-    //http://localhost:10083/guest/user/sign/count
+    //http://localhost:10080/guest/user/sign/count
 
 
     //*---- 收藏 ----
@@ -196,7 +196,7 @@ public class UserController4Guest {
         userService.doCollectG(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:10083/guest/user/collect
+    //http://localhost:10080/guest/user/collect
 
 
     /**
@@ -207,7 +207,7 @@ public class UserController4Guest {
     public Result collectCountG() {
         return Result.success(userService.collectCountG());
     }
-    //http://localhost:10083/guest/user/collect/count
+    //http://localhost:10080/guest/user/collect/count
 
 
     /**
@@ -220,7 +220,7 @@ public class UserController4Guest {
     public Result pageCollectG(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(userService.pageCollectG(current));
     }
-    //http://localhost:10083/guest/user/collect/page
+    //http://localhost:10080/guest/user/collect/page
 
 
     //! ADD
@@ -236,7 +236,7 @@ public class UserController4Guest {
         userService.registerG(userLoginDTO, session);
         return Result.success();
     }
-    //http://localhost:10083/guest/user/register
+    //http://localhost:10080/guest/user/register
 
 
     //! DELETE
@@ -251,7 +251,7 @@ public class UserController4Guest {
         userService.deleteUserB();
         return Result.success();
     }
-    //http://localhost:10083/guest/user/delete
+    //http://localhost:10080/guest/user/delete
 
 
     //! UPDATE
@@ -270,7 +270,7 @@ public class UserController4Guest {
             return Result.error(e.getMessage());
         }
     }
-    //http://localhost:10083/guest/user/update
+    //http://localhost:10080/guest/user/update
 
 
     /**
@@ -284,7 +284,7 @@ public class UserController4Guest {
         userService.putUserPasswordG(userLoginDTO);
         return Result.success();
     }
-    //http://localhost:10083/guest/user/update/code
+    //http://localhost:10080/guest/user/update/code
 
 
     //! QUERY
@@ -298,7 +298,7 @@ public class UserController4Guest {
     public Result getUser4MeG() {
         return Result.success(userService.getUser4MeG());
     }
-    //http://localhost:10083/guest/user/info
+    //http://localhost:10080/guest/user/info
 
 
     /**
@@ -314,7 +314,7 @@ public class UserController4Guest {
     public Result searchUserB(@RequestParam("account") String account, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(userService.searchUserB(account, current));
     }
-    //http://localhost:10083/guest/user/search/account?account=Store&current=1
+    //http://localhost:10080/guest/user/search/account?account=Store&current=1
 
 
 }

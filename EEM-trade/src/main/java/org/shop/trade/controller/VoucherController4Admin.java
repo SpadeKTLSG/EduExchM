@@ -42,7 +42,7 @@ public class VoucherController4Admin {
         voucherService.putSeckillVoucherA(voucherAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/voucher/add/seckill
+    //http://localhost:10080/admin/voucher/add/seckill
 
 
     /**
@@ -55,7 +55,7 @@ public class VoucherController4Admin {
         voucherService.putVoucherA(voucherAllDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/voucher/add
+    //http://localhost:10080/admin/voucher/add
 
 
     //! DELETE
@@ -77,7 +77,7 @@ public class VoucherController4Admin {
     public Result pageVoucher(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(voucherService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
     }
-    //http://localhost:8085/admin/voucher/page
+    //http://localhost:10080/admin/voucher/page
 
 
     /**
@@ -92,5 +92,5 @@ public class VoucherController4Admin {
     public Result searchVoucherB(@RequestParam("name") String name, @RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(voucherService.searchVoucherB(name, current));
     }
-    //http://localhost:8085/admin/voucher/search/name?name=卷&current=1
+    //http://localhost:10080/admin/voucher/search/name?name=卷&current=1
 }

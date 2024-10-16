@@ -62,7 +62,7 @@ public class OrderController4Admin {
     public Result pageOrderA(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(orderService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
     }
-    //http://localhost:8085/admin/order/listall
+    //http://localhost:10080/admin/order/listall
 
 
     /**
@@ -75,7 +75,7 @@ public class OrderController4Admin {
     public Result getOrderA(@RequestBody OrderAllDTO orderAllDTO) {
         return Result.success(orderService.orderDetail(orderAllDTO));
     }
-    //http://localhost:8085/admin/order/detail
+    //http://localhost:10080/admin/order/detail
 
 
 }

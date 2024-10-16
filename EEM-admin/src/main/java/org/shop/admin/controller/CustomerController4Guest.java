@@ -54,7 +54,7 @@ public class CustomerController4Guest {
         webSocketServer.sendToAllClient(JSON.toJSONString(orderMap));
         return Result.success();
     }
-    //http://localhost:8086/customer/guest/service
+    //http://localhost:10080/customer/guest/service
 
 
 }

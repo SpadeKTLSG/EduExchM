@@ -46,7 +46,7 @@ public class PanelController4Admin {
         hotsearchService.add2Hotsearch(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/hotsearch/add
+    //http://localhost:10080/admin/panel/hotsearch/add
 
 
     //! DELETE
@@ -61,7 +61,7 @@ public class PanelController4Admin {
         hotsearchService.remove4Hotsearch(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/hotsearch/delete
+    //http://localhost:10080/admin/panel/hotsearch/delete
 
 
     /**
@@ -74,7 +74,7 @@ public class PanelController4Admin {
         hotsearchService.clearAllHotsearch();
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/hotsearch/clear
+    //http://localhost:10080/admin/panel/hotsearch/clear
 
 
     //! UPDATE
@@ -93,7 +93,7 @@ public class PanelController4Admin {
     public Result queryHotsearchPage(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(hotsearchService.page(new Page<>(current, SystemConstant.DEFAULT_PAGE_SIZE)));
     }
-    //http://localhost:8085/admin/panel/hotsearch/query/page
+    //http://localhost:10080/admin/panel/hotsearch/query/page
 
 
     //* -- rotation轮播 --
@@ -112,7 +112,7 @@ public class PanelController4Admin {
         rotationService.add2Rotation(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/rotation/add
+    //http://localhost:10080/admin/panel/rotation/add
 
 
     //! DELETE
@@ -127,7 +127,7 @@ public class PanelController4Admin {
         rotationService.remove4Rotation(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/rotation/delete
+    //http://localhost:10080/admin/panel/rotation/delete
 
 
     //! UPDATE
@@ -144,7 +144,7 @@ public class PanelController4Admin {
     public Result queryRotationPage(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(rotationService.page(new Page<>(current, SystemConstant.DEFAULT_PAGE_SIZE)));
     }
-    //http://localhost:8085/admin/panel/rotation/query/page
+    //http://localhost:10080/admin/panel/rotation/query/page
 
 
     //* -- upshow提升 --
@@ -161,7 +161,7 @@ public class PanelController4Admin {
         upshowService.add2Upshow(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/upshow/add
+    //http://localhost:10080/admin/panel/upshow/add
 
     //! DELETE
 
@@ -175,7 +175,7 @@ public class PanelController4Admin {
         upshowService.remove4Upshow(prodLocateDTO);
         return Result.success();
     }
-    //http://localhost:8085/admin/panel/upshow/delete
+    //http://localhost:10080/admin/panel/upshow/delete
 
     //! UPDATE
 
@@ -193,7 +193,7 @@ public class PanelController4Admin {
     public Result queryUpshowPage(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(upshowService.page(new Page<>(current, SystemConstant.DEFAULT_PAGE_SIZE)));
     }
-    //http://localhost:8085/admin/panel/upshow/query/page
+    //http://localhost:10080/admin/panel/upshow/query/page
 
 
 }
