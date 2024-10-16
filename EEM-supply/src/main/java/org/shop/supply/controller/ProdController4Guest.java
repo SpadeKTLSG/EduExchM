@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.supply.common.constant.SystemConstant;
 import org.shop.supply.common.context.UserHolder;
@@ -15,6 +16,7 @@ import org.shop.supply.entity.ProdFunc;
 import org.shop.supply.entity.dto.ProdGreatDTO;
 import org.shop.supply.entity.dto.ProdLocateDTO;
 import org.shop.supply.entity.res.Result;
+import org.shop.supply.flow.es.ProdSearchService;
 import org.shop.supply.service.ProdCateService;
 import org.shop.supply.service.ProdFuncService;
 import org.shop.supply.service.ProdService;
@@ -34,7 +36,7 @@ public class ProdController4Guest {
     private final ProdService prodService;
     private final ProdCateService prodCateService;
     private final ProdFuncService prodFuncService;
-
+    private final ProdSearchService prodSearchService;
 
     //! Client
     @GetMapping("/remote/Prod/getById/{id}")
@@ -242,14 +244,12 @@ public class ProdController4Guest {
      * <p>
      * 无数据同步
      */
+    @SneakyThrows
     @GetMapping("/all/page/es/ez")
     @Operation(summary = "ES分页查询所有商品列表")
     @Parameters(@Parameter(name = "current", description = "当前页", required = true))
     public Result pageAllProd4ES_Ez(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        //TODO
-
-
-        return Result.success(prodService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
+        return Result.success(prodSearchService.searchProd(current, SystemConstant.MAX_PAGE_SIZE));
     }
     //http://localhost:10080/guest/prod/all/page/es/ez
 

@@ -92,6 +92,11 @@ spring:
         max-interval: 10000ms
         multiplier: 1
 
+  elasticsearch:
+    uris: http://${eduexch.es.host}:${eduexch.es.port}
+  #    username: ${eduexch.es.username}
+  #    password: ${eduexch.es.password}
+
 
   #文件上传
   servlet:
