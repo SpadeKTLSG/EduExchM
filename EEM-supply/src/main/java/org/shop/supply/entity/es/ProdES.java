@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.shop.supply.entity.Prod;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * 商品ES实体类
  */
@@ -59,6 +62,11 @@ public class ProdES {
     private Long userId;
 
     /**
+     * 自动补全字段
+     */
+    private List<String> suggestion;
+
+    /**
      * Prod -> ProdES
      */
     public ProdES(Prod prod) {
@@ -70,9 +78,12 @@ public class ProdES {
         this.stock = prod.getStock();
         this.description = prod.getDescription();
         this.userId = prod.getUserId();
+
+        // 组装suggestion
+        this.suggestion = Collections.singletonList(this.name);
     }
 
-    // 保存的数据结构
+    //? 一般索引库数据结构
     //{
     //  "prod" : {
     //    "aliases" : { },
@@ -107,4 +118,8 @@ public class ProdES {
     //      }
     //    },    ...
     //}
+
+    //? 带拼音分词器索引库数据结构
+    // 服务器装上Pinyin分词器崩溃了, 无法查看
+
 }

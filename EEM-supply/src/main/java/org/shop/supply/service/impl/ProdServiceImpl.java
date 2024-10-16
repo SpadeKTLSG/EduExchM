@@ -15,9 +15,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.elasticsearch.xcontent.XContentType;
+import org.jetbrains.annotations.NotNull;
 import org.shop.supply.client.OrderClient;
 import org.shop.supply.common.constant.MessageConstant;
 import org.shop.supply.common.constant.RedisConstant;
@@ -92,6 +99,48 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
     public void setHotsearchService(@Lazy HotsearchService hotsearchService) {
         this.hotsearchService = hotsearchService;
+    }
+
+
+    //! ES
+    @Override
+    public List<String> searchProd4ESSuggestion(String prefix) {
+        try {
+
+            SearchRequest request = new SearchRequest("prod");
+            //DSL
+            request.source().suggest(new SuggestBuilder().addSuggestion(
+                    "suggestions",
+                    SuggestBuilders.completionSuggestion("suggestion")
+                            .prefix(prefix)
+                            .skipDuplicates(true)
+                            .size(10)
+            ));
+
+            SearchResponse response = esClient.search(request, RequestOptions.DEFAULT);
+
+            // 解析结果
+            List<String> list = getList(response);
+            return list;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @NotNull
+    private static List<String> getList(SearchResponse response) {
+        Suggest suggest = response.getSuggest();
+        //根据补全查询名称获取补全结果
+        CompletionSuggestion suggestions = suggest.getSuggestion("suggestions");
+        // 获取options
+        List<CompletionSuggestion.Entry.Option> options = suggestions.getOptions();
+        // 遍历
+        List<String> list = new ArrayList<>(options.size());
+        for (CompletionSuggestion.Entry.Option option : options) {
+            String text = option.getText().toString();
+            list.add(text);
+        }
+        return list;
     }
 
 

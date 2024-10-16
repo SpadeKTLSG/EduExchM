@@ -254,21 +254,18 @@ public class ProdController4Guest {
     /**
      * 按Name模糊搜索商品(仅Prod表信息)
      * <p>前端搜索框, 分页展示结果</p>
-     * <p>继承搜索权重效果</p>
+     * <p>future: 继承搜索权重效果</p>
      */
-    @GetMapping("/search/name/es")
-    @Operation(summary = "按Name模糊搜索商品")
+    @GetMapping("/search/name/es/suggestion")
+    @Operation(summary = "按Name模糊搜索商品补全功能")
     @Parameters({
             @Parameter(name = "name", description = "商品名称", required = true),
             @Parameter(name = "current", description = "当前页", required = true)
     })
-    public Result searchProd4ES(@RequestParam("name") String name, @RequestParam(value = "current", defaultValue = "1") Integer current) {
-        //TODO
-
-
-        return Result.success();
+    public Result searchProd4ES(@RequestParam("key") String prefix) {
+        return Result.success(prodService.searchProd4ESSuggestion(prefix));
     }
-    //http://localhost:10080/guest/prod/search/name/es
+    //http://localhost:10080/guest/prod/search/name/es/suggestion
 
 
     /**
