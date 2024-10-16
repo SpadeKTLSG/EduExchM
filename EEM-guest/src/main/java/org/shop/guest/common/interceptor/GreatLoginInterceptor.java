@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.shop.guest.common.context.EmployeeHolder;
 import org.shop.guest.common.context.UserHolder;
 import org.shop.guest.entity.dto.UserLocalDTO;
@@ -16,7 +17,7 @@ import java.util.Objects;
 public class GreatLoginInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
 
         //通过OpenFeign调用, 请求头中的TL对象需要被取出
         String feign_info = request.getHeader("user-all-info");
