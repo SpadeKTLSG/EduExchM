@@ -265,11 +265,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
         //需要判断是否有已经开启的交易
-        Order order = orderClient.getOne(Wrappers.<Order>lambdaQuery()
-                .eq(Order::getProdId, prod.getId())
-                .ne(Order::getStatus, Order.OVER) //已经完成的交易不算
-                .ne(Order::getStatus, Order.STOP) //已经撤销的交易不算
-        );
+        Order order = orderClient.getOne(prod.getId());
 
         if (order != null) throw new SthHasCreatedException(MessageConstant.ORDER_STATUS_ERROR);
 
