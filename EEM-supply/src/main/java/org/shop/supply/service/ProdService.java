@@ -14,8 +14,21 @@ import java.util.List;
 
 public interface ProdService extends IService<Prod> {
 
+    //! Sync 4 MQ
+
+    /**
+     * 删除
+     */
+    void deleteById(Long id);
+
+    /**
+     * 插入
+     */
+    void insertById(Long id);
+
 
     //! Func
+
 
     /**
      * 管理员审核单件商品

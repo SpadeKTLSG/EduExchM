@@ -240,34 +240,16 @@ public class ProdController4Guest {
     //http://localhost:10080/guest/prod/all/page
 
     /**
-     * ES分页简单查询所有商品列表(仅Prod表)
-     * <p>
-     * 无数据同步
+     * ES分页简单查询所有商品列表(仅Prod表) + 数据同步功能
      */
     @SneakyThrows
-    @GetMapping("/all/page/es/ez")
+    @GetMapping("/all/page/es")
     @Operation(summary = "ES分页查询所有商品列表")
     @Parameters(@Parameter(name = "current", description = "当前页", required = true))
     public Result pageAllProd4ES_Ez(@RequestParam(value = "current", defaultValue = "1") Integer current) {
         return Result.success(prodSearchService.searchProd(current, SystemConstant.MAX_PAGE_SIZE));
     }
-    //http://localhost:10080/guest/prod/all/page/es/ez
-
-
-    /**
-     * ES分页查询所有商品列表(仅Prod表) + 数据同步功能
-     */
-    @GetMapping("/all/page/es/sync")
-    @Operation(summary = "ES分页查询所有商品列表, 带数据同步")
-    @Parameters(@Parameter(name = "current", description = "当前页", required = true))
-    public Result pageAllProd4ES_Sync(@RequestParam(value = "current", defaultValue = "1") Integer current) {
-        //TODO
-
-
-        return Result.success(prodService.page(new Page<>(current, SystemConstant.MAX_PAGE_SIZE)));
-    }
-    //http://localhost:10080/guest/prod/all/page/es/sync
-
+    //http://localhost:10080/guest/prod/all/page/es
 
     /**
      * 按Name模糊搜索商品(仅Prod表信息)

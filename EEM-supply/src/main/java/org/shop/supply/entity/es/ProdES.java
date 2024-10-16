@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.shop.supply.entity.Prod;
 
 /**
  * 商品ES实体类
@@ -56,4 +57,54 @@ public class ProdES {
      * 对应用户的ID
      */
     private Long userId;
+
+    /**
+     * Prod -> ProdES
+     */
+    public ProdES(Prod prod) {
+        this.id = prod.getId();
+        this.name = prod.getName();
+        this.categoryId = prod.getCategoryId();
+        this.price = prod.getPrice();
+        this.images = prod.getImages();
+        this.stock = prod.getStock();
+        this.description = prod.getDescription();
+        this.userId = prod.getUserId();
+    }
+
+    // 保存的数据结构
+    //{
+    //  "prod" : {
+    //    "aliases" : { },
+    //    "mappings" : {
+    //      "properties" : {
+    //        "categoryId" : {
+    //          "type" : "keyword"
+    //        },
+    //        "description" : {
+    //          "type" : "text",
+    //          "analyzer" : "ik_max_word"
+    //        },
+    //        "id" : {
+    //          "type" : "keyword"
+    //        },
+    //        "images" : {
+    //          "type" : "keyword"
+    //        },
+    //        "name" : {
+    //          "type" : "text",
+    //          "analyzer" : "ik_max_word"
+    //        },
+    //        "price" : {
+    //          "type" : "long"
+    //        },
+    //        "stock" : {
+    //          "type" : "long"
+    //        },
+    //        "userId" : {
+    //          "type" : "keyword"
+    //        }
+    //      }
+    //    },    ...
+    //}
 }

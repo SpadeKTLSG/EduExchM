@@ -4,6 +4,7 @@ import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,6 +13,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.xcontent.XContentType;
 import org.shop.supply.client.OrderClient;
 import org.shop.supply.common.constant.MessageConstant;
 import org.shop.supply.common.constant.RedisConstant;
@@ -26,6 +32,7 @@ import org.shop.supply.entity.Prod;
 import org.shop.supply.entity.ProdCate;
 import org.shop.supply.entity.ProdFunc;
 import org.shop.supply.entity.dto.*;
+import org.shop.supply.entity.es.ProdES;
 import org.shop.supply.entity.remote.Order;
 import org.shop.supply.entity.res.RedisData;
 import org.shop.supply.entity.vo.ProdAllVO;
@@ -39,6 +46,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -67,6 +75,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
     private final StringRedisTemplate stringRedisTemplate;
 
+    private final RestHighLevelClient esClient;
     private RotationService rotationService;
     private UpshowService upshowService;
     private HotsearchService hotsearchService;
@@ -83,6 +92,36 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
 
     public void setHotsearchService(@Lazy HotsearchService hotsearchService) {
         this.hotsearchService = hotsearchService;
+    }
+
+
+    //! Sync 4 MQ
+
+    @Override
+    public void deleteById(Long id) {
+        try {
+            DeleteRequest request = new DeleteRequest("prod", id.toString());
+            esClient.delete(request, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void insertById(Long id) {
+        try {
+            //类型转换
+            Prod prod = getById(id);
+            ProdES prodES = new ProdES(prod);
+
+            // 发送请求
+            IndexRequest request = new IndexRequest("prod").id(prod.getId().toString());
+            request.source(JSON.toJSONString(prodES), XContentType.JSON);   // Json文档
+            esClient.index(request, RequestOptions.DEFAULT);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

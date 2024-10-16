@@ -1,4 +1,5 @@
 import com.alibaba.fastjson.JSON;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -42,11 +43,8 @@ public class ProdIndexTest {
      */
     @Test
     void createIndex() throws IOException {
-        // 1.创建Request对象
         CreateIndexRequest request = new CreateIndexRequest("prod");
-        // 2.准备请求的参数：DSL语句
         request.source(MAPPING_TEMPLATE, XContentType.JSON);
-        // 3.发送请求
         client.indices().create(request, RequestOptions.DEFAULT);
     }
 
@@ -61,6 +59,14 @@ public class ProdIndexTest {
             request.source(JSON.toJSONString(prod), XContentType.JSON);
             client.index(request, RequestOptions.DEFAULT);
         }
+    }
+
+    /**
+     * 删除索引
+     */
+    @Test
+    void deleteIndex() throws IOException {
+        client.indices().delete(new DeleteIndexRequest("prod"), RequestOptions.DEFAULT);
     }
 
 
