@@ -93,6 +93,7 @@ public class ProdServiceImpl extends ServiceImpl<ProdMapper, Prod> implements Pr
     public void checkA(ProdLocateDTO prodLocateDTO) {
 
         Prod prod = supplyRepo.findByProdName_UserId(prodLocateDTO.getName(), prodLocateDTO.getUserId());
+        if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
         ProdFunc prodFunc = prodFuncService.getOne(new LambdaQueryWrapper<ProdFunc>()
                 .eq(ProdFunc::getId, prod.getId())
         );

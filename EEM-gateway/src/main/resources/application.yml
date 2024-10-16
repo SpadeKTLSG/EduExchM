@@ -65,39 +65,39 @@ spring:
 
         # supply-service
         - id: supply-service
-          uri: lb://supplyservice
+          uri: lb://supply
           predicates:
             - Path=/admin/panel/supply/**
 
         - id: supply-service
-          uri: lb://supplyservice
+          uri: lb://supply
           predicates:
             - Path=/admin/prod/**
 
         - id: supply-service
-          uri: lb://supplyservice
+          uri: lb://supply
           predicates:
             - Path=/guest/prod/**
 
 
         # trade-service
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/admin/order/**
 
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/guest/order/**
 
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/admin/voucher/**
 
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/guest/voucher/**
 
