@@ -1,13 +1,9 @@
 package org.shop.trade.client;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.shop.trade.entity.remote.Prod;
 import org.shop.trade.entity.remote.ProdFunc;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "supply", url = "http://localhost:10084")
 public interface ProdClient {
@@ -21,7 +17,7 @@ public interface ProdClient {
     void updateById(@RequestBody Prod prod);
 
     @GetMapping("/guest/prod/remote/Prod/getOne")
-    Prod getOne(@RequestBody LambdaQueryWrapper<Prod> eq);
+    Prod getOne(@RequestParam("userId") Long userId, @RequestParam("name") String name);
 
     //ProdFunc
 
@@ -31,7 +27,5 @@ public interface ProdClient {
     @PostMapping("/guest/prod/remote/ProdFunc/updateById")
     void updateById_ProdFunc(@RequestBody ProdFunc prod);
 
-    @GetMapping("/guest/prod/remote/ProdFunc/getOne")
-    ProdFunc getOne_ProdFunc(@RequestBody LambdaQueryWrapper<ProdFunc> eq);
 
 }

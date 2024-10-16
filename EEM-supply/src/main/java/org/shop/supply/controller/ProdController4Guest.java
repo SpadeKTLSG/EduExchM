@@ -1,6 +1,5 @@
 package org.shop.supply.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,8 +48,10 @@ public class ProdController4Guest {
     }
 
     @PostMapping("/remote/Prod/getOne")
-    public Prod getOne(@RequestBody LambdaQueryWrapper<Prod> eq) {
-        return prodService.getOne(eq);
+    public Prod getOne(@RequestParam("userId") Long userId, @RequestParam("name") String name) {
+        return prodService.getOne(Wrappers.<Prod>lambdaQuery()
+                .eq(Prod::getUserId, userId)
+                .eq(Prod::getName, name));
     }
 
     @GetMapping("/remote/ProdFunc/getById/{id}")
@@ -63,10 +64,6 @@ public class ProdController4Guest {
         prodFuncService.updateById(prodFunc);
     }
 
-    @PostMapping("/remote/ProdFunc/getOne")
-    public ProdFunc getOned_ProdFunc(@RequestBody LambdaQueryWrapper<ProdFunc> eq) {
-        return prodFuncService.getOne(eq);
-    }
 
     //! Func
 
