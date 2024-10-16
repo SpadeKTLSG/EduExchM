@@ -141,7 +141,7 @@ spring:
 logging:
 
   level:
-    com.shop:
+    org.shop:
       DEBUG
 
   pattern:

@@ -25,12 +25,12 @@ public class GreatLoginInterceptor implements HandlerInterceptor {
             String user_type = request.getHeader("user_type");
             //保存TL
             if (Objects.equals(user_type, "admin")) {
-                log.debug("OpenFeign操作EEM-admin管理员: " + feign_info);
+                log.debug("OpenFeign操作EEM-guest管理员: " + feign_info);
                 EmployeeLocalDTO user = JSONUtil.toBean(feign_info, EmployeeLocalDTO.class);
                 EmployeeHolder.saveEmployee(user);
 
             } else if (Objects.equals(user_type, "user")) {
-                log.debug("OpenFeign操作EEM-admin用户: " + feign_info);
+                log.debug("OpenFeign操作EEM-guest用户: " + feign_info);
                 UserLocalDTO user = JSONUtil.toBean(feign_info, UserLocalDTO.class);
                 UserHolder.saveUser(user);
             } else {

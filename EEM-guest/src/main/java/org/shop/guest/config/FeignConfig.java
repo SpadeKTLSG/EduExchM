@@ -16,13 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class FeignConfig {
 
-    //note: 此版本连接池不稳定, 一点不ok
-/*
-    @Bean
-    public OkHttpClient client() {
-        return new OkHttpClient();
-    }
-*/
 
     @Bean
     public Logger.Level logLevel() {
@@ -45,9 +38,11 @@ public class FeignConfig {
             // note: 同时仅仅存在一种用户信息: 管理员/顾客, 打成JSON字符串放入请求头中后面解析出来判断是哪种类型用户
             if (EmployeeHolder.getEmployee() != null && EmployeeHolder.getEmployee().getId() != null) {
                 userAllInfo = JSONUtil.toJsonStr(EmployeeHolder.getEmployee());
+                template.header("user_type", "admin");
             }
             if (UserHolder.getUser() != null && UserHolder.getUser().getId() != null) {
                 userAllInfo = JSONUtil.toJsonStr(UserHolder.getUser());
+                template.header("user_type", "guest");
             }
 
             template.header("user-all-info", userAllInfo);

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "supply")
+@FeignClient(name = "supply", url = "http://localhost:10084")
 public interface ProdClient {
 
     //Prod
