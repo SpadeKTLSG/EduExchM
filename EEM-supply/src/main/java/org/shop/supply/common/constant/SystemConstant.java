@@ -35,4 +35,8 @@ public interface SystemConstant {
      */
     int SYS_MENU_MAX_ID = 1;
 
+    /**
+     * 临时账户Account
+     */
+    String TEMP_ACCOUNT_NAME = "TLSG";
 }

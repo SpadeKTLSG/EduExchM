@@ -1,6 +1,7 @@
 package org.shop.supply.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,8 +35,11 @@ public class ProdController4Admin {
 
     //! Client
     @GetMapping("/remote/getOne")
-    public Prod getOne(@RequestBody LambdaQueryWrapper<Prod> ne) {
-        return prodService.getOne(ne);
+    public Prod getOne(@RequestParam("userId") Long userId, @RequestParam("name") String name) {
+        LambdaQueryWrapper<Prod> queryWrapper = Wrappers.<Prod>lambdaQuery()
+                .eq(Prod::getUserId, userId)
+                .eq(Prod::getName, name);
+        return prodService.getOne(queryWrapper);
     }
 
     //! Func

@@ -180,7 +180,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void doSignG() {
 
         Long userId = UserHolder.getUser().getId();
-
+        if (userId == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         LocalDateTime now = LocalDateTime.now();
         String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));  // 拼接key
         String key = RedisConstant.USER_SIGN_KEY + userId + keySuffix;
@@ -194,7 +194,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public int signCountG() {
 
         Long userId = UserHolder.getUser().getId();
-
+        if (userId == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         LocalDateTime now = LocalDateTime.now();
         String keySuffix = now.format(DateTimeFormatter.ofPattern(":yyyyMM"));  // 拼接key
         String key = RedisConstant.USER_SIGN_KEY + userId + keySuffix;
@@ -229,8 +229,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void doCollectG(ProdLocateDTO prodLocateDTO) {
 
         Long userId = UserHolder.getUser().getId();
-
-        Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getUserId, prodLocateDTO.getUserId()).eq(Prod::getName, prodLocateDTO.getName()));
+        if (userId == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        Prod prod = prodClient.getOne(prodLocateDTO.getUserId(), prodLocateDTO.getName());
 
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
@@ -284,6 +284,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public int collectCountG() {
         Long userId = UserHolder.getUser().getId();
+        if (userId == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         UserFunc userFunc = userFuncService.getById(userId);
         String collections = userFunc.getCollections();
 
@@ -295,6 +296,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Page<Prod> pageCollectG(Integer current) {
 
         Long userId = UserHolder.getUser().getId();
+        if (userId == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         UserFunc userFunc = userFuncService.getById(userId);
         String collections = userFunc.getCollections();
         if (collections == null) {
@@ -308,7 +310,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String[] split = prodLocateDTO.split(":"); //分割
             Long prodUserId = Long.parseLong(split[0]);
             String prodName = split[1];
-            Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getUserId, prodUserId).eq(Prod::getName, prodName));
+            Prod prod = prodClient.getOne(prodUserId, prodName);
             prods.add(prod);
         }
 

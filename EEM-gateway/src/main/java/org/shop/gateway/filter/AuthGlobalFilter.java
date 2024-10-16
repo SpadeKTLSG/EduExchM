@@ -4,7 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.shop.gateway.common.constant.MessageConstant;
 import org.shop.gateway.common.constant.RedisConstant;
+import org.shop.gateway.common.constant.SystemConstant;
 import org.shop.gateway.common.exception.BlockActionException;
 import org.shop.gateway.common.exception.NetWorkException;
 import org.shop.gateway.common.exception.NotLoginException;
@@ -48,19 +50,21 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         }
 
         // 获取请求头中自定义token + (Postman相关处理)
-        String token = null;
+        String token;
         List<String> headers = request.getHeaders().get("authorization");
-
-        if (!isEmpty(headers)) {
-            token = headers.get(0);
+        if (isEmpty(headers)) {
+            throw new NotLoginException(MessageConstant.USER_NOT_LOGIN);
         }
-        try {
-            if (StrUtil.isBlank(token)) throw new NotLoginException();
 
+        token = headers.get(0);
+        if (StrUtil.isBlank(token)) throw new NotLoginException(MessageConstant.USER_NOT_LOGIN);
+
+        try {
             if (token.startsWith("Bearer ")) { //去除Postman产生的Bearer前缀
                 token = token.substring(7);
             }
         } catch (Exception e) {
+            log.error(e.getMessage());
             ServerHttpResponse response = exchange.getResponse();
             response.setRawStatusCode(401);
             return response.setComplete();
@@ -93,18 +97,35 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             }
         }
 
-        //基于身份权限识别鉴权
-        if (path.contains("/admin") && !isAdmin) {
-            throw new BlockActionException("用户不能访问管理员端");
-        } else if (path.contains("/guest")) {
-            throw new BlockActionException("管理员不能访问用户端");
+        //基于身份权限识别鉴权 : 全局路径设计的不算好, 因为是单体改的
+        if (path.contains("admin")) {
+            if (isAdmin) {
+                log.debug("网关管理员请求路径: " + path);
+            } else {
+                throw new BlockActionException("用户不能访问管理员端");
+            }
+        } else if (path.contains("guest")) {
+            if (!isAdmin) {
+                log.debug("网关用户请求路径: " + path);
+            } else {
+                throw new BlockActionException("管理员不能访问用户端");
+            }
         } else {
-            log.debug("正在访问一个通用其他请求路径: " + path);
+            if (isAdmin) {
+                log.debug("网关管理员访问一个未分类请求路径: " + path);
+            } else {
+                log.debug("网关用户访问一个未分类请求路径: " + path);
+            }
         }
 
         //传递在请求头的自定义用户信息, 之后在各个服务中可以通过请求头直接获取用户信息存TL (由于单体设计缺陷, 还需要存储用户类型)
         Long userId = Long.parseLong((String) userMap.get("id"));
-        String saved_info = isAdmin ? JSONUtil.toJsonStr(new EmployeeLocalDTO(userId, null)) : JSONUtil.toJsonStr(new UserLocalDTO(userId, null));
+
+        //由于网关不能写业务, 如果要保证account的强一致性这里就可以每次去查用户的account, 同时存到缓存里, 传递给下游服务避免重复查找, 直接从缓存拿(账户登录时间内)
+        //但是account的强一致性并不重要, 所以这里只是简单的传递临时用户信息, 需要时候直接用id查即可.
+        String saved_info = isAdmin ? JSONUtil.toJsonStr(new EmployeeLocalDTO(userId, SystemConstant.TEMP_ACCOUNT_NAME)) : JSONUtil.toJsonStr(new UserLocalDTO(userId, SystemConstant.TEMP_ACCOUNT_NAME));
+
+        //打包带走
         ServerWebExchange ex = exchange.mutate().request(a -> a.header("saved_info", saved_info).header("user_type", isAdmin ? "admin" : "guest"))
                 .build();
         return chain.filter(ex);

@@ -95,21 +95,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     public void postOrderG(ProdLocateDTO prodLocateDTO) {
         String name = prodLocateDTO.getName();
         Long userId = prodLocateDTO.getUserId();
-
         if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
-
-
-        Prod prod = prodClient.getOne(new LambdaQueryWrapper<Prod>()
-                .eq(Prod::getName, name)
-                .eq(Prod::getUserId, userId)
-        );
+        Prod prod = prodClient.getOne(userId, name);
 
         if (prod == null || prod.getStock() <= 0) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
-
-
-        ProdFunc prodFunc = prodClient.getOne_ProdFunc(new LambdaQueryWrapper<ProdFunc>()
-                .eq(ProdFunc::getId, prod.getId())
-        );
+        ProdFunc prodFunc = prodClient.getById_ProdFunc(prod.getId());
         if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BadArgsException(MessageConstant.BAD_ARGS);      //审核未通过的商品不可交易
 
 
@@ -170,19 +160,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         // 找到对应Prod
         String name = prodLocateDTO.getName();
         Long userId = prodLocateDTO.getUserId();
-
         if (name == null || userId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
-
-
-        Prod prod = prodClient.getOne(new LambdaQueryWrapper<Prod>()
-                .eq(Prod::getName, name)
-                .eq(Prod::getUserId, userId)
-        );
+        Prod prod = prodClient.getOne(userId, name);
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
-        ProdFunc prodFunc = prodClient.getOne_ProdFunc(new LambdaQueryWrapper<ProdFunc>()
-                .eq(ProdFunc::getId, prod.getId())
-        );
+        ProdFunc prodFunc = prodClient.getById_ProdFunc(prod.getId());
         if (!Objects.equals(prodFunc.getStatus(), ProdFunc.NORMAL)) throw new BlockActionException(MessageConstant.BLOCK_ACTION);//审核未通过的商品不可交易
 
 
@@ -319,13 +301,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private Order dtoFindEntity(OrderAllDTO orderAllDTO) {
         Long sellerId = orderAllDTO.getSellerId();
         Long buyerId = orderAllDTO.getBuyerId();
-
-        if (sellerId == null || buyerId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
+        Long prodId = orderAllDTO.getProdId();
+        if (sellerId == null || buyerId == null || prodId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
         Order order1 = this.getOne(new LambdaQueryWrapper<Order>() //三个ID唯一确认订单
-                .eq(Order::getBuyerId, orderAllDTO.getBuyerId())
-                .eq(Order::getSellerId, orderAllDTO.getSellerId())
-                .eq(Order::getProdId, orderAllDTO.getProdId())
+                .eq(Order::getBuyerId, buyerId)
+                .eq(Order::getSellerId, sellerId)
+                .eq(Order::getProdId, prodId)
         );
 
         if (order1 == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);

@@ -127,4 +127,6 @@ public interface UserService extends IService<User> {
      * Account模糊搜索用户
      */
     Page<UserVO> searchUserB(String account, Integer current);
+
+
 }

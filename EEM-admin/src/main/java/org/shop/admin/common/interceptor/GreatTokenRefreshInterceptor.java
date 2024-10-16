@@ -1,6 +1,5 @@
 package org.shop.admin.common.interceptor;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +37,13 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
     @SneakyThrows
     public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
 
+        // 通过OpenFeign调用, 请求头中的TL对象需要被取出
+        String feign_info = request.getHeader("user-all-info");
+        if (feign_info != null) {
+            //如果是通过OpenFeign调用, 无需刷新Token操作, 直接返回
+            return true;
+        }
+
         // 获取请求头中存储的TL, UT, token
         String saved_info = request.getHeader("saved_info");
         String user_type = request.getHeader("user_type");
@@ -55,11 +61,11 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
         try {
             if (isAdmin) {
                 log.debug("操作EEM-admin管理员: " + saved_info);
-                EmployeeLocalDTO user = BeanUtil.toBean(saved_info, EmployeeLocalDTO.class);
+                EmployeeLocalDTO user = JSONUtil.toBean(saved_info, EmployeeLocalDTO.class);
                 return handleAdmin(token, user);
             } else {
                 log.debug("操作EEM-admin用户: " + saved_info);
-                UserLocalDTO user = BeanUtil.toBean(saved_info, UserLocalDTO.class);
+                UserLocalDTO user = JSONUtil.toBean(saved_info, UserLocalDTO.class);
                 return handleUser(token, user);
             }
         } catch (Exception e) {
@@ -104,7 +110,7 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
      * 请求结束后移除管理员/用户信息
      */
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    public void afterCompletion(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler, Exception ex) {
         EmployeeHolder.removeEmployee();
         UserHolder.removeUser();
     }

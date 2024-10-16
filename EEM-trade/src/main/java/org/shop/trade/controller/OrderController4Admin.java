@@ -1,7 +1,7 @@
 package org.shop.trade.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,8 +30,13 @@ public class OrderController4Admin {
 
     //! Client
     @GetMapping("/remote/getOne")
-    public Order getOne(@RequestBody LambdaQueryWrapper<Order> ne) {
-        return orderService.getOne(ne);
+    public Order getOne(@RequestParam("prodId") Long prodId) {
+
+        return orderService.getOne(Wrappers.<Order>lambdaQuery()
+                .eq(Order::getProdId, prodId)
+                .ne(Order::getStatus, Order.OVER) //已经完成的交易不算
+                .ne(Order::getStatus, Order.STOP) //已经撤销的交易不算
+        );
     }
 
     //! Func

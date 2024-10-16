@@ -28,7 +28,8 @@ spring:
         #          filters:
         #            - AddRequestHeader=Authorization, "Bearer {token}"
 
-        # admin-service
+        # 测试请把请求统一发送到这个网关服务地址, 进行路由转发
+
         - id: admin-service
           uri: lb://admin
           predicates:
@@ -64,39 +65,39 @@ spring:
 
         # supply-service
         - id: supply-service
-          uri: lb://supplyservice
+          uri: lb://supply
           predicates:
             - Path=/admin/panel/supply/**
 
         - id: supply-service
-          uri: lb://supplyservice
+          uri: lb://supply
           predicates:
-            - Path=/admin/prod**
+            - Path=/admin/prod/**
 
         - id: supply-service
-          uri: lb://supplyservice
+          uri: lb://supply
           predicates:
             - Path=/guest/prod/**
 
 
         # trade-service
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/admin/order/**
 
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/guest/order/**
 
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/admin/voucher/**
 
         - id: trade-service
-          uri: lb://tradeservice
+          uri: lb://trade
           predicates:
             - Path=/guest/voucher/**
 
@@ -140,7 +141,7 @@ spring:
 logging:
 
   level:
-    com.shop:
+    org.shop:
       DEBUG
 
   pattern:
