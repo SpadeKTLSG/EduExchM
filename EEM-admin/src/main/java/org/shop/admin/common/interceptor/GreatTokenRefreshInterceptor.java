@@ -21,7 +21,9 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * 登录拦截器 - 刷新Token
+ */
 @Slf4j
 public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
 
