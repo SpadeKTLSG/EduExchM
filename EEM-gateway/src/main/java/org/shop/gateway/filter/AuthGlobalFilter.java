@@ -98,12 +98,24 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         }
 
         //基于身份权限识别鉴权 : 全局路径设计的不算好, 因为是单体改的
-        if (path.contains("/admin") && !isAdmin) {
-            throw new BlockActionException("用户不能访问管理员端");
-        } else if (path.contains("/guest") && isAdmin) {
-            throw new BlockActionException("管理员不能访问用户端");
+        if (path.contains("admin")) {
+            if (isAdmin) {
+                log.debug("网关管理员请求路径: " + path);
+            } else {
+                throw new BlockActionException("用户不能访问管理员端");
+            }
+        } else if (path.contains("guest")) {
+            if (!isAdmin) {
+                log.debug("网关用户请求路径: " + path);
+            } else {
+                throw new BlockActionException("管理员不能访问用户端");
+            }
         } else {
-            log.debug("正在访问一个通用其他请求路径: " + path);
+            if (isAdmin) {
+                log.debug("网关管理员访问一个未分类请求路径: " + path);
+            } else {
+                log.debug("网关用户访问一个未分类请求路径: " + path);
+            }
         }
 
         //传递在请求头的自定义用户信息, 之后在各个服务中可以通过请求头直接获取用户信息存TL (由于单体设计缺陷, 还需要存储用户类型)

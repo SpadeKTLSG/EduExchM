@@ -301,13 +301,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private Order dtoFindEntity(OrderAllDTO orderAllDTO) {
         Long sellerId = orderAllDTO.getSellerId();
         Long buyerId = orderAllDTO.getBuyerId();
-
-        if (sellerId == null || buyerId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
+        Long prodId = orderAllDTO.getProdId();
+        if (sellerId == null || buyerId == null || prodId == null) throw new BadArgsException(MessageConstant.BAD_ARGS);
 
         Order order1 = this.getOne(new LambdaQueryWrapper<Order>() //三个ID唯一确认订单
-                .eq(Order::getBuyerId, orderAllDTO.getBuyerId())
-                .eq(Order::getSellerId, orderAllDTO.getSellerId())
-                .eq(Order::getProdId, orderAllDTO.getProdId())
+                .eq(Order::getBuyerId, buyerId)
+                .eq(Order::getSellerId, sellerId)
+                .eq(Order::getProdId, prodId)
         );
 
         if (order1 == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
