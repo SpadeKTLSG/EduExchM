@@ -230,7 +230,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         Long userId = UserHolder.getUser().getId();
         if (userId == null) throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
-        Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getUserId, prodLocateDTO.getUserId()).eq(Prod::getName, prodLocateDTO.getName()));
+        Prod prod = prodClient.getOne(prodLocateDTO.getUserId(), prodLocateDTO.getName());
 
         if (prod == null) throw new SthNotFoundException(MessageConstant.OBJECT_NOT_ALIVE);
 
@@ -310,7 +310,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String[] split = prodLocateDTO.split(":"); //分割
             Long prodUserId = Long.parseLong(split[0]);
             String prodName = split[1];
-            Prod prod = prodClient.getOne(Wrappers.<Prod>lambdaQuery().eq(Prod::getUserId, prodUserId).eq(Prod::getName, prodName));
+            Prod prod = prodClient.getOne(prodUserId, prodName);
             prods.add(prod);
         }
 
