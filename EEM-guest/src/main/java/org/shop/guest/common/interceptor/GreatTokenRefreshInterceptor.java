@@ -41,18 +41,14 @@ public class GreatTokenRefreshInterceptor implements HandlerInterceptor {
         String saved_info = request.getHeader("saved_info");
         String user_type = request.getHeader("user_type");
         String token = request.getHeader("authorization");
-
         if (StrUtil.isBlank(saved_info) || StrUtil.isBlank(user_type) || StrUtil.isBlank(token)) throw new NetWorkException(MessageConstant.USER_NOT_LOGIN);
-
-        boolean isAdmin = Objects.equals(user_type, "admin"); //是否是管理员对象
-
         if (token.startsWith("Bearer ")) { //去除Postman产生的Bearer前缀
             token = token.substring(7);
         }
 
         // 对象转换
         try {
-            if (isAdmin) {
+            if (Objects.equals(user_type, "admin")) {
                 log.debug("操作EEM-admin管理员: " + saved_info);
                 EmployeeLocalDTO user = JSONUtil.toBean(saved_info, EmployeeLocalDTO.class);
                 return handleAdmin(token, user);

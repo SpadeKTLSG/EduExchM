@@ -3,7 +3,6 @@ package org.shop.guest.config;
 import cn.hutool.json.JSONUtil;
 import feign.Logger;
 import feign.RequestInterceptor;
-import feign.okhttp.OkHttpClient;
 import lombok.extern.slf4j.Slf4j;
 import org.shop.guest.common.context.EmployeeHolder;
 import org.shop.guest.common.context.UserHolder;
@@ -17,10 +16,13 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class FeignConfig {
 
+    //note: 此版本连接池不稳定, 一点不ok
+/*
     @Bean
     public OkHttpClient client() {
         return new OkHttpClient();
     }
+*/
 
     @Bean
     public Logger.Level logLevel() {
