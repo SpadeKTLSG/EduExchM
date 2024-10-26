@@ -46,7 +46,7 @@ public class GreatLoginInterceptor implements HandlerInterceptor {
 
         // 同一操作者不能同时操作管理员端和用户端, 一次只有一种类型的TL
         if (EmployeeHolder.getEmployee() == null && UserHolder.getUser() == null) {
-            response.setStatus(401);
+            response.setStatus(403); //无权访问
             return false;
         }
 
