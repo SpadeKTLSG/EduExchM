@@ -1,0 +1,6 @@
+eduexch:
+
+  nacos: #Nacos
+    host: NULL
+    port: NULL
+

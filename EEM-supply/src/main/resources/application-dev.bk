@@ -1,0 +1,31 @@
+eduexch:
+
+  datasource: #MySQL
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    host: NULL
+    port: NULL
+    database: EEM_Supply
+    username: NULL
+    password: NULL
+
+  redis: #Redis
+    host: NULL
+    port: NULL
+    password: NULL
+    database: NULL
+
+  rabbitmq: #RabbitMQ
+    host: NULL
+    port: NULL
+    username: NULL
+    password: NULL
+    virtual-host: eduexch
+
+  nacos: #Nacos
+    host: NULL
+    port: NULL
+
+  es: #Elasticsearch
+    host: NULL
+    port: NULL
+    scheme: http
