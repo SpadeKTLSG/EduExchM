@@ -4,3 +4,8 @@ eduexch:
     host: NULL
     port: NULL
 
+  redis: #Redis
+    host: NULL
+    port: NULL
+    password: NULL
+    database: NULL

@@ -112,6 +112,21 @@ spring:
             allowCredentials: true # 是否允许携带cookie
             maxAge: 360000 # 这次跨域检测的有效期
 
+  # Redis
+  data:
+    redis:
+      host: ${eduexch.redis.host}
+      port: ${eduexch.redis.port}
+      password: ${eduexch.redis.password}
+      database: ${eduexch.redis.database}
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 1
+          time-between-eviction-runs: 10s
+      timeout: 20000            # 超时时间: 20s
+
   profiles:
     active: dev   # 环境 dev|test|prod
 
