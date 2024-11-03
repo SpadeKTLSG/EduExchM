@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 /**
  * 公告完全DTO
  */
@@ -31,16 +29,5 @@ public class NoticeAllDTO {
      * 是否置顶
      */
     private Boolean top = false;
-
-    /**
-     * 发布时间
-     */
-    private LocalDateTime publishTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updateTime;
-
 
 }
