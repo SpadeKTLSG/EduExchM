@@ -9,13 +9,17 @@ import java.util.List;
 public interface MenuService extends IService<Menu> {
 
     /**
-     * 获取前端系统菜单列表, 不包含按钮
+     * 系统菜单列表, 不包含按钮(用于导航
      */
     List<MenuVO> listNav();
 
+    /**
+     * 所有菜单列表(用于增删改
+     */
+    List<Menu> listEZMenuNoButton();
 
     /**
-     * 获取前端系统菜单列表
+     * 系统菜单列表
      */
     List<MenuVO> listMenu();
 

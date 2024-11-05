@@ -66,6 +66,17 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return rootMenuVO;
     }
 
+
+    @Override
+    public List<Menu> listEZMenuNoButton() {
+        return this.list(new LambdaQueryWrapper<Menu>()
+                .select(Menu::getMenuId, Menu::getParentId, Menu::getName)
+                .ne(Menu::getType, 2)
+                .orderByAsc(Menu::getOrderNum)
+        );
+    }
+
+
     @Override
     public List<MenuVO> listMenu() {
         List<Menu> res = this.list(new LambdaQueryWrapper<Menu>()
