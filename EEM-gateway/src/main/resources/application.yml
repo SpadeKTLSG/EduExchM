@@ -50,6 +50,10 @@ spring:
           predicates:
             - Path=/customer/guest/**
 
+        - id: admin-service
+          uri: lb://admin
+          predicates:
+            - Path=/admin/eemfront/**
 
         # guest-service
         - id: guest-service
@@ -164,7 +168,7 @@ management:
 springdoc:
   # swagger
   swagger-ui:
-    path: admin.html # http://localhost:10080/admin.html
+    path: admin.html # http://localhost:9999/admin.html
 
 
 

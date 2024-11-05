@@ -75,7 +75,7 @@ M means What?, 全新的项目:?
 
 ### Postman
 
-直接访问网关即可10080
+直接访问网关即可9999
 
 记得手动同步导入导出
 
@@ -85,7 +85,7 @@ M means What?, 全新的项目:?
 
 ### Swagger
 
-网关gateway 10080
+网关gateway 9999
 
 ```java
 不可访问
