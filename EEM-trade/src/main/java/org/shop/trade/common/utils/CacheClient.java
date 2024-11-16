@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -26,7 +27,17 @@ import java.util.function.Function;
 @Component
 public class CacheClient {
 
-    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
+    //线程池不能采用这种方式创建, 存储过多会导致OOM, 需要修改 -> Executors.newFixedThreadPool(10);, 目标场景是开启独立线程 实现缓存重建
+//    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
+    // 参数设置: CPU本人天选5Pro 核心数 * 2 = 32, 则线程池核心线程大小设置为32 + 1 = 33
+    private static final ExecutorService CACHE_REBUILD_EXECUTOR = new ThreadPoolExecutor(
+            33,
+            33,
+            0L,
+            TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(2048),
+            new ThreadPoolExecutor.CallerRunsPolicy()
+    );
 
     private StringRedisTemplate stringRedisTemplate;
 
