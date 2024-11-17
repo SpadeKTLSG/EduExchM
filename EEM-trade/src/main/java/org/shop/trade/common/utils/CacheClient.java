@@ -12,41 +12,84 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 
 /**
  * 缓存客户端工具类
- * <p>仅为示例, 在使用联合主键情况下不适用</p>
+ * <p>仅为示例, 在使用联合主键情况下并不适用</p>
+ *
+ * @author admin
  */
 @Slf4j
 @Component
 public class CacheClient {
 
-    //线程池不能采用这种方式创建, 存储过多会导致OOM, 需要修改 -> Executors.newFixedThreadPool(10);, 目标场景是开启独立线程 实现缓存重建
-//    private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
-    // 参数设置: CPU本人天选5Pro 核心数 * 2 = 32, 则线程池核心线程大小设置为32 + 1 = 33
+    /**
+     * 缓存重建线程池
+     */
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = new ThreadPoolExecutor(
-            33,
-            33,
-            0L,
-            TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<>(2048),
-            new ThreadPoolExecutor.CallerRunsPolicy()
-    );
+            Runtime.getRuntime().availableProcessors(),
+            Runtime.getRuntime().availableProcessors() * 2,
+            1L,
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>(1024)) {
 
+        @Override
+        protected void afterExecute(Runnable runnable, Throwable throwable) {
+            //execute运行 适配
+            if (throwable != null) {
+                log.error(throwable.getMessage(), throwable);
+            }
+            //submit运行 适配
+            if (throwable == null && runnable instanceof Future<?>) {
+                try {
+                    Future<?> future = (Future<?>) runnable;
+                    if (future.isDone()) {
+                        future.get();
+                    }
+                } catch (CancellationException ce) {
+                    throwable = ce;
+                    log.error(ce.getMessage(), ce);
+                } catch (ExecutionException ee) {
+                    throwable = ee.getCause();
+                    log.error(ee.getMessage(), ee);
+                } catch (InterruptedException ie) {
+                    log.error(ie.getMessage(), ie);
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    };
+
+    /**
+     * stringRedisTemplate
+     */
     private StringRedisTemplate stringRedisTemplate;
 
-    //任意Java对象序列化为JSON，并存储到String类型的Key中，并可以设置TTL过期时间
+    /**
+     * set
+     *
+     * @param key      key
+     * @param value    value
+     * @param time     time
+     * @param timeUnit timeUnit
+     */
+//任意Java对象序列化为JSON，并存储到String类型的Key中，并可以设置TTL过期时间
     public void set(String key, Object value, Long time, TimeUnit timeUnit) {
         stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(value), time, timeUnit);
     }
 
-    //将任意Java对象序列化为JSON，并存储在String类型的Key中，并可以设置逻辑过期时间，用于处理缓存击穿问题
+    /**
+     * setWithLogicExpire
+     *
+     * @param key      key
+     * @param value    value
+     * @param time     time
+     * @param timeUnit timeUnit
+     */
+//将任意Java对象序列化为JSON，并存储在String类型的Key中，并可以设置逻辑过期时间，用于处理缓存击穿问题
     public void setWithLogicExpire(String key, Object value, Long time, TimeUnit timeUnit) {
 
         RedisData<Object> redisData = new RedisData<>();
@@ -57,6 +100,19 @@ public class CacheClient {
     }
 
 
+    /**
+     * queryWithPassThrough
+     *
+     * @param keyPrefix  keyPrefix
+     * @param id         id
+     * @param type       type
+     * @param dbFallback dbFallback
+     * @param time       time
+     * @param timeUnit   timeUnit
+     * @param <R>        R
+     * @param <ID>       ID
+     * @return R
+     */
     public <R, ID> R queryWithPassThrough(String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit timeUnit) {
 
         String key = keyPrefix + id;
@@ -86,6 +142,19 @@ public class CacheClient {
     }
 
 
+    /**
+     * queryWithLogicalExpire
+     *
+     * @param keyPrefix  keyPrefix
+     * @param id         id
+     * @param type       type
+     * @param dbFallback dbFallback
+     * @param time       time
+     * @param timeUnit   timeUnit
+     * @param <R>        R
+     * @param <ID>       ID
+     * @return R
+     */
     public <R, ID> R queryWithLogicalExpire(String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit timeUnit) {
 
         String key = keyPrefix + id;
@@ -128,6 +197,19 @@ public class CacheClient {
         return r;
     }
 
+    /**
+     * queryWithMutex
+     *
+     * @param keyPrefix  keyPrefix
+     * @param id         id
+     * @param type       type
+     * @param dbFallback dbFallback
+     * @param time       time
+     * @param timeUnit   timeUnit
+     * @param <R>        R
+     * @param <ID>       ID
+     * @return R
+     */
     public <R, ID> R queryWithMutex(String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit timeUnit) {
 
         String key = keyPrefix + id;
@@ -165,11 +247,22 @@ public class CacheClient {
         return r;
     }
 
+    /**
+     * tryLock
+     *
+     * @param key key
+     * @return data
+     */
     private boolean tryLock(String key) {
         Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", 10, TimeUnit.SECONDS);
         return BooleanUtil.isTrue(flag);
     }
 
+    /**
+     * unlock
+     *
+     * @param key key
+     */
     private void unlock(String key) {
         stringRedisTemplate.delete(key);
     }
