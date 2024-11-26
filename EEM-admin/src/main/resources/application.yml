@@ -1,6 +1,8 @@
 server:
   port: 10082 # 服务端口
 
+aspect:
+  pointcut-expression-dateAutoFill: execution(* org.shop.admin.service.*.*(..)) && @annotation(org.shop.admin.common.annotation.AutoFill)
 
 spring:
 
@@ -136,7 +138,7 @@ logging:
   pattern:
     dateformat: mm:ss.SSS
 
- 
+
 
 
 # 禁止监控
