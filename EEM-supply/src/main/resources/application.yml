@@ -110,7 +110,7 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-    default-property-inclusion: non_null # JSON处理时忽略非空字段
+    default-property-inclusion: non_null # JSON处理时忽略空字段
 
 
 
