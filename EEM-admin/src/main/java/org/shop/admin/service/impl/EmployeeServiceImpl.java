@@ -73,7 +73,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @SneakyThrows
     public String loginA(EmployeeLoginDTO employeeLoginDTO, HttpSession session) {
 
-        //删除掉之前本地的所有登陆令牌
+        //删除掉之前本地的所有登陆令牌  FIXME, 关闭调试
         Set<String> keys = stringRedisTemplate.keys(RedisConstant.LOGIN_USER_KEY_ADMIN + "*");
         if (keys != null) {
             stringRedisTemplate.delete(keys);
