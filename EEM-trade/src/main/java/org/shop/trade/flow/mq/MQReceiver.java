@@ -46,6 +46,9 @@ public class MQReceiver {
     public void receiveSeckillMessage(String msg) {
         log.debug("MQ准备处理秒杀订单消息: " + msg);
 
+        //! note: 这里应该做上锁操作, 因为有并发问题, 直接锁这个用户账号, 限制一次下单的并发即可.
+        //! 由于是分布式环境, 还是建议用 Redission 来做
+
         //取出消息并转换为订单对象
         Order order = JSON.parseObject(msg, Order.class);
 
@@ -92,6 +95,8 @@ public class MQReceiver {
         }
 
         log.debug("恭喜, 一个秒杀逻辑订单创建成功!");
+
+        //! note: 未来这里应该做解锁操作, 释放锁
     }
 
 
